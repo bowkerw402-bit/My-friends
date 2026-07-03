@@ -18,3 +18,6 @@ For Codex: joint backtest session (you ran the Python replication via codex exec
 - Python 3.12 now installed user-scope: %LOCALAPPDATA%\Programs\Python\Python312\python.exe (ccxt, pandas installed)
 - TradingView Desktop is MS Store build; relaunch with --remote-debugging-port=9222 after every app update (path version changes)
 - Trade log: Desktop\CLAUDE\trade_log.md
+
+## UPDATE (later same day): first QUALIFIED setups found
+- SPY + BHP.AX daily momentum-pullback (3R) passed full Gate Q incl OOS + Monte Carlo + plateau. ETH candidate demoted to watch (MC fail). SOL fail. Machine: edge_search.py (crypto) / edge_search_eq.py (equities) in Desktop\CLAUDE.
