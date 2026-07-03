@@ -31,3 +31,5 @@ For Codex: joint backtest session (you ran the Python replication via codex exec
 ## UPDATE 6 (Jul 4): class #3 (NR7 breakout) qualified on QQQ/BHP/GLD; GLD passed both existing classes (MR OOS PF 3.85!). Book now 9 setups, ~60 tr/yr: P(profitable year) 85.7%, median +18.5%/yr. Pain bands updated (streaks to 15 are in-plan).
 
 ## UPDATE 7 (Jul 4): round-3 validation — 10-run perturbation battery + Codex 7-finding code review. 2 HIGH bugs fixed (gap stops, notional cap). Corrected headline: P(profit yr) 77.6%, median +14%/yr. Book intact (9/9 PF>1). Open item: MR grid honest-exit re-selection.
+
+## UPDATE 8 (Jul 4): growth council + tests. Runner exits qualified on trend classes (5/6 improved, avg R +35%). Regime sizing rejected by data. Council consensus: capital + going live > further optimization at this size.
