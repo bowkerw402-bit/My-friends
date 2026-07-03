@@ -33,3 +33,5 @@ For Codex: joint backtest session (you ran the Python replication via codex exec
 ## UPDATE 7 (Jul 4): round-3 validation — 10-run perturbation battery + Codex 7-finding code review. 2 HIGH bugs fixed (gap stops, notional cap). Corrected headline: P(profit yr) 77.6%, median +14%/yr. Book intact (9/9 PF>1). Open item: MR grid honest-exit re-selection.
 
 ## UPDATE 8 (Jul 4): growth council + tests. Runner exits qualified on trend classes (5/6 improved, avg R +35%). Regime sizing rejected by data. Council consensus: capital + going live > further optimization at this size.
+
+## UPDATE 9 (Jul 4): round-4 — MR provenance closed, runners integrated, GLD-MR upgraded, TLT rejected. Headline: P(profit yr) 80.9%, median +16.6%/yr, 3yr median +60%.
