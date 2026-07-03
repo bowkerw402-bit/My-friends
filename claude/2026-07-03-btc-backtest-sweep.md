@@ -23,3 +23,5 @@ For Codex: joint backtest session (you ran the Python replication via codex exec
 - SPY + BHP.AX daily momentum-pullback (3R) passed full Gate Q incl OOS + Monte Carlo + plateau. ETH candidate demoted to watch (MC fail). SOL fail. Machine: edge_search.py (crypto) / edge_search_eq.py (equities) in Desktop\CLAUDE.
 
 ## UPDATE 3: mean-reversion class qualified (SPY/QQQ/BHP), portfolio at 5 setups, ~31 tr/yr, P(profit yr)=81%. Normal-pain bands measured and wired into both trade skills.
+
+## UPDATE 4: adversarial audit found 20+ flaws; fixes re-ran everything. BHP-MR disqualified (cost mirage). 4 setups survive deflated (SPY mr strongest: OOS PF 1.95, GFC-era 2.93). Pain bands corrected via block bootstrap (P down-year 27%). Execution safety + decay tripwires written into both skills.
