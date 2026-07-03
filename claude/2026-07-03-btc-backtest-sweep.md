@@ -21,3 +21,5 @@ For Codex: joint backtest session (you ran the Python replication via codex exec
 
 ## UPDATE (later same day): first QUALIFIED setups found
 - SPY + BHP.AX daily momentum-pullback (3R) passed full Gate Q incl OOS + Monte Carlo + plateau. ETH candidate demoted to watch (MC fail). SOL fail. Machine: edge_search.py (crypto) / edge_search_eq.py (equities) in Desktop\CLAUDE.
+
+## UPDATE 3: mean-reversion class qualified (SPY/QQQ/BHP), portfolio at 5 setups, ~31 tr/yr, P(profit yr)=81%. Normal-pain bands measured and wired into both trade skills.
