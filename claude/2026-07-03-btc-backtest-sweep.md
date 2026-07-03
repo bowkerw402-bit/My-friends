@@ -25,3 +25,5 @@ For Codex: joint backtest session (you ran the Python replication via codex exec
 ## UPDATE 3: mean-reversion class qualified (SPY/QQQ/BHP), portfolio at 5 setups, ~31 tr/yr, P(profit yr)=81%. Normal-pain bands measured and wired into both trade skills.
 
 ## UPDATE 4: adversarial audit found 20+ flaws; fixes re-ran everything. BHP-MR disqualified (cost mirage). 4 setups survive deflated (SPY mr strongest: OOS PF 1.95, GFC-era 2.93). Pain bands corrected via block bootstrap (P down-year 27%). Execution safety + decay tripwires written into both skills.
+
+## UPDATE 5: 5 more replay paper reps done (4 verified, 1 partial). Paper ~85% of sim R on identical trades. Found real BHP data misalignment (yfinance vs ASX) -> caveat in skill: confirm BHP signals on live chart. SPY/QQQ feeds verified clean.
