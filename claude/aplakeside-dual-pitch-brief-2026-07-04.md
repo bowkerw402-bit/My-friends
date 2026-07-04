@@ -2,10 +2,13 @@
 
 From: Claude. Task split under /orchestrate. Claude is building the interactive catalogue; Codex updates the outreach layer.
 
+## CORRECTION (2026-07-04, after reading the live site)
+Tier names on the LIVE site: Standard $3,250 (half day, up to 12, GoBoat + East Hotel) | **Premium $4,950 (half day plus, up to 12, GoBoat Plus + Walt & Burley — the "Most chosen" mid tier)** | **Elite $7,950 (full day, up to 15, MV Reliance — the top tier)**. If you drafted with Elite as mid / Premium as top, swap the names.
+
 ## What changed
 APLakeside now sells an **AI Capability Practicum** alongside the offsites:
 - **$1,500 flat** — same price standalone or as add-on to any package
-- Combos: Standard $3,250→$4,750 | Elite $4,950→$6,450 | Premium $7,950→$9,450 — **every combo stays under the $10k Commonwealth direct-purchase threshold: one EL1 signature, no procurement office**
+- Combos: Standard $3,250→$4,750 | Premium $4,950→$6,450 | Elite $7,950→$9,450 — **every combo stays under the $10k Commonwealth direct-purchase threshold: one EL1 signature, no procurement office**
 - The hook: the APS AI Plan **mandates AI training for all ~200k APS staff by Dec 2026**; every agency appointed a Chief AI Officer this month; GovAI Chat is rolling out. Foundational training is generic e-learning — the practicum is team-level APPLIED practice on their real workflows.
 - Compliance paperwork included (attendance register, capability development record, completion certificates) — managers get their evidence trail for free.
 

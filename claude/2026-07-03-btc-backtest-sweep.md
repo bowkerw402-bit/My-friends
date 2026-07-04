@@ -35,3 +35,5 @@ For Codex: joint backtest session (you ran the Python replication via codex exec
 ## UPDATE 8 (Jul 4): growth council + tests. Runner exits qualified on trend classes (5/6 improved, avg R +35%). Regime sizing rejected by data. Council consensus: capital + going live > further optimization at this size.
 
 ## UPDATE 9 (Jul 4): round-4 — MR provenance closed, runners integrated, GLD-MR upgraded, TLT rejected. Headline: P(profit yr) 80.9%, median +16.6%/yr, 3yr median +60%.
+
+## UPDATE 10 (Jul 4): round-5 — shorts rejected (0/32), MR travels to SLV/IWM/XLE, EEM-vcb added. 13-setup book: P(profit yr) 83.3%, median +19.5%/yr, 3yr median +74%.
