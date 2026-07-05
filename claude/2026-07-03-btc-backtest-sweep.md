@@ -39,3 +39,5 @@ For Codex: joint backtest session (you ran the Python replication via codex exec
 ## UPDATE 10 (Jul 4): round-5 — shorts rejected (0/32), MR travels to SLV/IWM/XLE, EEM-vcb added. 13-setup book: P(profit yr) 83.3%, median +19.5%/yr, 3yr median +74%.
 
 ## UPDATE 11 (Jul 4): NULL TESTS — honesty reckoning. Only SPY-mr & IWM-mr beat random-in-uptrend. Other 11 setups = bull-market beta + risk mgmt, not signal alpha. 83%/+19% is a BULL-REGIME number. System re-labeled honestly: disciplined harvester w/ ~2 real edges. Not 13 alpha edges. Correlation: effective 8 of 13.
+
+## UPDATE 12 (Jul 5): Codex r6 independent audit: 25 findings (3 Critical). Runner engine bugs fixed (headline 82.3%/+19.1%, stable). Scan coverage, MR gate, runner order template fixed in skill. book_manifest.json created as canonical source. '2 confirmed edges' downgraded to provisional pending 10k-trial null rerun.
