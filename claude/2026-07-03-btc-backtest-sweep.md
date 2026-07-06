@@ -43,3 +43,5 @@ For Codex: joint backtest session (you ran the Python replication via codex exec
 ## UPDATE 12 (Jul 5): Codex r6 independent audit: 25 findings (3 Critical). Runner engine bugs fixed (headline 82.3%/+19.1%, stable). Scan coverage, MR gate, runner order template fixed in skill. book_manifest.json created as canonical source. '2 confirmed edges' downgraded to provisional pending 10k-trial null rerun.
 
 ## UPDATE 13 (Jul 5): 10k-trial null test DEFINITIVE — FOUR confirmed edges (IWM-mr .012, BHP-mom .017, SPY-mr .022, XLE-mr .042), GLD-mr marginal, 8 beta sleeves. Manifest r7. ADAMANT tradebot reviewed+rejected (token-issuer market-making, not retail alpha).
+
+## UPDATE 14 (Jul 6): MTM engine (Codex #13/14/22 closed) — DEPLOYABLE truth: P(profit yr) 68.5%, median +7.1%, CAGR 6.8%, true maxDD 24.1%, only 53/79 signals fit slots. 2022-24 = 3 lean years straight. Edge-priority slots tested+rejected. Forward test live: BHP paper long 60.74 (exact-touch fill).
