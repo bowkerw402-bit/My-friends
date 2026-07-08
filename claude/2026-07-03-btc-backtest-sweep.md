@@ -45,3 +45,5 @@ For Codex: joint backtest session (you ran the Python replication via codex exec
 ## UPDATE 13 (Jul 5): 10k-trial null test DEFINITIVE — FOUR confirmed edges (IWM-mr .012, BHP-mom .017, SPY-mr .022, XLE-mr .042), GLD-mr marginal, 8 beta sleeves. Manifest r7. ADAMANT tradebot reviewed+rejected (token-issuer market-making, not retail alpha).
 
 ## UPDATE 14 (Jul 6): MTM engine (Codex #13/14/22 closed) — DEPLOYABLE truth: P(profit yr) 68.5%, median +7.1%, CAGR 6.8%, true maxDD 24.1%, only 53/79 signals fit slots. 2022-24 = 3 lean years straight. Edge-priority slots tested+rejected. Forward test live: BHP paper long 60.74 (exact-touch fill).
+
+## UPDATE 15 (Jul 7): MAX HUNT sweep 1 — 115 instruments, BH-FDR gate -> 3 new probation edges (RTX-mr 3-decade edge!, XRT-mr, KRE-mr). Book 13->16, deployable P(profit) 68.5->70.2%, CAGR 6.8->7.5%.
