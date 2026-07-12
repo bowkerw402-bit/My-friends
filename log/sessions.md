@@ -33,3 +33,9 @@ Auto-updated by orchestrate.ps1 after each multi-agent run.
 **Summary:** You've hit your session limit � resets 1:40pm (Australia/Sydney)
 
 ---
+
+## 2026-07-12 | Gourmet Scoops — configurator cutouts refine (orchestrated)
+**Task:** Center the build-a-scoop photos, make sizes consistent, de-plastic the waffle cones.
+**Claude (done):** Audited all 24 scoop images (bbox scale/center) — found scale spread 525–721px H / 260–560px W, center-X 45–56%, scoop-top 9–34%. Confirmed card CSS is already correct (centered/consistent frame) — no layout change needed. Wrote precise Codex brief with the numbers: `tasks/gourmet-cutouts-refine-codex.md`.
+**Codex (queued, desktop):** Regenerate the 24 cutouts — consistent per-vessel scale, centered (50% ±2), and photographic non-plastic waffle cones (crumb texture + toast variation). Runs in the desktop app (headless can't image-gen).
+**Follow-up:** When Codex drops the new PNGs, Claude re-audits + snap-verifies the live configurator.
