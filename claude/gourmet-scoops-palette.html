@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Gourmet Scoops — locked flavour palette</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #f3ede3; font: 14px/1.4 system-ui, sans-serif; color: #2a2622; padding: 22px; }
+  h1 { font-size: 18px; margin-bottom: 2px; }
+  .sub { color: #6b6459; font-size: 12px; margin-bottom: 18px; }
+  .row { display: grid; grid-template-columns: 150px 120px 60px 60px 70px 1fr; gap: 12px; align-items: center;
+         padding: 10px 0; border-top: 1px solid #ddd5c8; }
+  .row.head { font-weight: 700; border-top: none; color: #6b6459; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+  .name { font-weight: 700; font-size: 15px; }
+  .body { height: 76px; border-radius: 10px; border: 1px solid rgba(0,0,0,.12);
+          display: flex; align-items: flex-end; justify-content: center; padding-bottom: 5px;
+          font-size: 12px; font-weight: 700; text-shadow: 0 1px 2px rgba(0,0,0,.25); color: #fff; }
+  .chip { height: 44px; border-radius: 7px; border: 1px solid rgba(0,0,0,.12);
+          display: flex; align-items: center; justify-content: center; font-size: 9px; color: rgba(0,0,0,.5); }
+  .chip.dark { color: rgba(255,255,255,.85); }
+  .hexes { font-family: ui-monospace, Consolas, monospace; font-size: 12px; line-height: 1.5; }
+  .hexes b { font-weight: 700; }
+  .none { color: #9a9melody; color:#a99; font-style: italic; font-size: 11px; }
+</style></head><body>
+<h1>Gourmet Scoops — locked flavour palette</h1>
+<p class="sub">One body colour per fruit, reused across cup + cone. Sampled from the cup images, corrected for distinctness (yellows pulled apart, pinks separated, lychee = white-blush). Highlight = soft sheen, Shadow = swirl-ridge, Fleck = only where the fruit calls for it (kept subtle).</p>
+<div class="row head"><div>Flavour</div><div>Body (the target)</div><div>Highlight</div><div>Shadow</div><div>Fleck</div><div>Exact hexes</div></div>
+<div id="rows"></div>
+<script>
+  // body, fleck(null=none), and mood
+  const P = [
+    ['banana',      '#ECCE8E', null,      'pale creamy yellow'],
+    ['pineapple',   '#F0DCAE', null,      'palest cream-yellow (lightest yellow)'],
+    ['mango',       '#F2BD63', null,      'golden (most saturated yellow)'],
+    ['raspberry',   '#E493A3', '#A83246', 'clean pink'],
+    ['dragonfruit', '#D98BB2', '#2A2320', 'magenta-pink, tiny black seeds'],
+    ['cherry',      '#C56F79', '#9C2F3B', 'deep pink-red (darkest pink)'],
+    ['blueberry',   '#B7A8CB', '#4B3A6B', 'muted lavender-purple'],
+    ['lychee',      '#F0E3E2', null,      'white with faint blush'],
+  ];
+  function adj(hex, f){ // lighten(+) / darken(-) toward white/black
+    const n=parseInt(hex.slice(1),16); let r=n>>16,g=(n>>8)&255,b=n&255;
+    if(f>0){r+= (255-r)*f; g+=(255-g)*f; b+=(255-b)*f;} else {r*=1+f; g*=1+f; b*=1+f;}
+    return '#'+[r,g,b].map(v=>Math.round(v).toString(16).padStart(2,'0')).join('');
+  }
+  function lum(hex){const n=parseInt(hex.slice(1),16);return (0.299*(n>>16)+0.587*((n>>8)&255)+0.114*(n&255));}
+  const rows=document.getElementById('rows');
+  for(const [name,body,fleck,mood] of P){
+    const hi=adj(body,0.22), sh=adj(body,-0.24);
+    const r=document.createElement('div'); r.className='row';
+    r.innerHTML=`
+      <div class="name">${name}<div style="font-weight:400;color:#6b6459;font-size:11px">${mood}</div></div>
+      <div class="body" style="background:${body}">${body}</div>
+      <div class="chip" style="background:${hi}">${hi}</div>
+      <div class="chip ${lum(sh)<140?'dark':''}" style="background:${sh}">${sh}</div>
+      ${fleck?`<div class="chip ${lum(fleck)<140?'dark':''}" style="background:${fleck}">${fleck}</div>`:`<div style="font-style:italic;color:#a99;font-size:11px">none</div>`}
+      <div class="hexes">body <b>${body}</b> · highlight ${hi} · shadow ${sh}${fleck?` · fleck <b>${fleck}</b>`:` · <span style="color:#a99">no flecks — keep smooth</span>`}</div>`;
+    rows.appendChild(r);
+  }
+</script></body></html>

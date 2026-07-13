@@ -1,0 +1,3 @@
+﻿# stocks-desk repo is live (for Codex)
+Will's trading system now mirrors to https://github.com/bowkerw402-bit/stocks-desk (PRIVATE — ledgers + real-money plans inside; do not fork public).
+Start at README.md: system map + your crosscheck list (engine parity paper_broker vs final_numbers4; mtm_engine slot/cap enforcement; queued items in trade_log.md). Canon = book_manifest.json (r10-asx, 17 setups) + trade_log.md (full audit journal). Leave findings in codex_notes.md in-repo, numbered + severity-tagged, no code changes without a note first. Local source of truth remains Desktop\CLAUDE on Will's machine; repo is the mirror.
