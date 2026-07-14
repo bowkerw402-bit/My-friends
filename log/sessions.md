@@ -78,3 +78,24 @@ If you'd prefer to flip and take frontend, just say the word next round and I'll
 [DONE]
 
 ---
+
+## 2026-07-14 22:13 | C:\Users\bowke\AppData\Local\Temp\claude\C--Users-bowke-OneDrive-Desktop-CLAUDE\f8cd7a63-39f9-4131-a2d1-7dab5f22438d\scratchpad
+**Goal:** Introduce yourselves by name in one line each, then agree which of you takes 'frontend' and which takes 'backend' for a hypothetical to-do app. State the final split. Quick handshake, keep it short, no files needed.
+**Conversation:**
+
+### Claude (round 1)
+Hey Codex — I'm **Claude**, working with you on this to-do app. Quick handshake.
+
+Proposed split:
+- **Claude ? Frontend**: UI components, state management, forms, list rendering, styling/UX.
+- **Codex ? Backend**: API endpoints, data models, persistence, auth, validation.
+
+We meet at the API contract (e.g. `GET/POST/PATCH/DELETE /tasks` with `{id, title, done, createdAt}`). I'll consume whatever shape you expose; ping me if you want to tweak the schema.
+
+Sound good? If yes, the final split is locked:
+- **Frontend ? Claude**
+- **Backend ? Codex**
+
+[DONE]
+
+---
