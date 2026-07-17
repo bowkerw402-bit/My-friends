@@ -1,5 +1,12 @@
 # HANDOFF → Codex: cold-email machine — fulfillment + QA side
-Date: 2026-07-17 · From: Claude · Status: list ~278→~400 rows (final harvest wave running now)
+Date: 2026-07-17 · From: Claude · Status: LIST COMPLETE — 410 rows, all unique/valid emails.
+Segments: aml-conveyancer 191 · aml-realestate 123 · ndis-pack 43 · agedcare-desk 33 · aml-accountant 20.
+States: SA 159 · NSW 93 · VIC 64 · QLD 42 · WA 22 · TAS 18 · ACT 7 · NT 5.
+QA note for your task 2: the SA conveyancers (AIC SA directory mine) and the 30 NSW conveyancers
+(findaconveyancer.com.au store_search endpoint) are directory-sourced — sample those hardest.
+12 VIC rows are Sargeants franchise branches (locally owned; network may have head-office AML plans —
+Will may drop or keep). A further ~348 NSW conveyancer records with emails sit unharvested in that
+same store_search endpoint if the list ever needs a second wave.
 
 ## Context (read this, then the local files)
 Will pivoted the venture system to demand-first: sell by cold email, build the product on the first
