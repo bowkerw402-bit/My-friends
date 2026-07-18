@@ -1,6 +1,6 @@
-# DAILY - Saturday, 2026-07-18
+# DAILY - Sunday, 2026-07-19
 
-_Mission Control morning digest. Generated 18:12._
+_Mission Control morning digest. Generated 09:36._
 
 ## Runs (last 24h)  -  3
 
@@ -10,9 +10,9 @@ _Mission Control morning digest. Generated 18:12._
 
 ## Recently touched  -  newest first
 
-- **10-active\bbs-evidence-desk\STATUS.md**  (4h ago, 2026-07-18 14:19)
-- **handoffs\2026-07-18-claude-to-codex-outbound-email.md**  (4h ago, 2026-07-18 14:04)
-- **handoffs\README.md**  (4h ago, 2026-07-18 14:04)
+- **10-active\bbs-evidence-desk\STATUS.md**  (11h ago, 2026-07-18 22:36)
+- **handoffs\2026-07-18-claude-to-codex-outbound-email.md**  (20h ago, 2026-07-18 14:04)
+- **handoffs\README.md**  (20h ago, 2026-07-18 14:04)
 
 ## Needs attention  -  0
 
