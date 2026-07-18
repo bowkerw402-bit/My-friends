@@ -185,6 +185,40 @@ headless QA silently captures the un-supersampled version and every quality snap
 
 ---
 
+## Round 9 — v3.7 — "I can still see pixels in the mountains and the rings"
+
+The quality pass from round 8 **did nothing at all on a HiDPI display**, and I had "verified" it.
+
+```js
+// v3.6 — WRONG
+var SS = Math.min(Math.max(devicePixelRatio || 1, 1.6), 2);
+// on a 2x monitor: min(max(2, 1.6), 2) === 2 === native. Zero supersampling.
+```
+
+The cap was **absolute**. On a 1x display the floor of 1.6 kicked in and it genuinely supersampled —
+which is exactly the configuration headless capture uses (`deviceScaleFactor: 1`), so every snapshot
+I took confirmed it working. On Will's 2x screen it was a no-op.
+
+> **Supersampling must be a MULTIPLE of `devicePixelRatio`, never an absolute number.**
+> `min(DPR * 1.5, 2.8)` on desktop, `min(DPR, 2)` on mobile.
+
+> **And: capturing at `deviceScaleFactor: 1` cannot detect a dpr-relative bug.** The check that
+> finds it is comparing the canvas **drawing buffer** against its **CSS size** — if
+> `buffer === css * dpr` exactly, you are at native and supersampling nothing.
+
+The rest of the round:
+
+- **FXAA as the final pass.** Supersampling fixes AREA coverage but still steps on THIN
+  high-contrast edges. A 0.15-radius gold ring rim against bright sky, and a hill silhouette, are
+  the two worst cases in this scene — exactly the two things he named. Its `resolution` uniform is
+  in DEVICE pixels, so it must track pixelRatio on resize *and* after the adaptive guard fires.
+- **Aerial perspective instead of more geometry.** A hard silhouette against a bright sky is the
+  worst aliasing case there is. Pulling the fog in (60–240 → 42–205) dissolves the far ridges toward
+  the sky — softer *and* more physically correct than adding polygons, which would not have helped
+  at all because the aliasing was at pixel level, not polygon level.
+- **A small glow on the type** while staying LED: raise the emissive floor so letter cores clear the
+  bloom threshold, keep the radius tight. Glow comes from the threshold, crispness from the radius.
+
 ## The transferable pattern
 
 1. **The symptom is never the cause.** Broken-U → not rotation. Matte gold → not the material.
@@ -195,3 +229,6 @@ headless QA silently captures the un-supersampled version and every quality snap
    rather than keeping them.
 4. **When he references old work, read the old file.** Not the screenshot.
 5. **Measure before choosing.** The tool existed the whole time.
+6. **Verify on the real target's parameters.** A quality fix that only works at `dpr=1` will pass
+   every headless check and fail on the user's actual monitor. Ask what the verification environment
+   differs from the target in, *then* pick the check.
