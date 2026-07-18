@@ -1,0 +1,57 @@
+{
+    "schema":  "runrecord/v1",
+    "run_id":  "2026-07-18--141512--this-working-directory-is-the-government",
+    "slug":  "this-working-directory-is-the-government",
+    "task":  "This working directory is the Government Supplier Evidence Desk - the flagship service line under the \"Bowker Businesses Services\" (BBS) storefront. Read the folder STRUCTURE and the key docs (README, EXECUTION.md, LAUNCH.md, ops/ files, automation/ and site/ folders) to understand what is built and what is pending. IMPORTANT: do NOT open prospect/client files, and do NOT quote any firm name, person, email, or phone number - describe structure and counts only.\n\nProduce an OWNER-ASSIGNED SCHEDULE to move this venture forward. Output a ranked table of the top next actions:\n| # | Next action | Owner (Claude / Codex / Will) | Why it\u0027s theirs | Blocked by |\n\nClaude: draft the schedule from the structure - separate what an agent can build now (drafts, templates, engine/site work, QA) from the human-only gates (send, deploy, domain, payment, lawyer, email identity, list build).\nCodex: pressure-test it - name the single highest-leverage next action, what Claude missed, and which \"Will\" gate is the real bottleneck. Quote one specific line of Claude\u0027s you would change and why.\nConverge on a ranked TOP 5 with clear owners. Keep it concrete and honest. READ-ONLY - modify nothing. End each message with a TOOLS-USED: line. End with [DONE] when you agree.",
+    "station":  "BUILD",
+    "venture":  "",
+    "work_dir":  "C:\\Users\\bowke\\OneDrive\\Desktop\\CLAUDE\\Business\\govt-supplier-evidence-desk",
+    "started_at":  "2026-07-18T14:07:17.0710167+10:00",
+    "ended_at":  "2026-07-18T14:15:12.2953776+10:00",
+    "mode":  "two-agent",
+    "two_agent":  true,
+    "degraded":  false,
+    "rounds_planned":  3,
+    "rounds_run":  3,
+    "done_reason":  "rounds exhausted",
+    "agents":  [
+                   {
+                       "name":  "claude",
+                       "turns":  3,
+                       "statuses":  [
+                                        "ok"
+                                    ]
+                   },
+                   {
+                       "name":  "codex",
+                       "turns":  3,
+                       "statuses":  [
+                                        "ok"
+                                    ]
+                   }
+               ],
+    "codex_status":  "ok",
+    "tools_manifest":  [
+
+                       ],
+    "tools_verified":  [
+
+                       ],
+    "tools_declared":  [
+                           "PowerShell read-only inspection, run-venture-factory skill instructions.",
+                           "PowerShell read-only inspection; run-venture-factory skill instructions.",
+                           "PowerShell read-only repository inspection; run-venture-factory skill instructions."
+                       ],
+    "outputs":  [
+
+                ],
+    "review_verdict":  "",
+    "ledger_touched":  [
+
+                       ],
+    "pii_present":  false,
+    "pii_reason":  "none",
+    "encoding":  "utf-8",
+    "commit":  null,
+    "orchestrator_version":  "2.0.0"
+}
