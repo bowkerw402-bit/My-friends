@@ -144,6 +144,15 @@ $piiC = [pscustomobject]@{ task='email bob@acme.com the draft'; workDir=$tmp; ro
 $rrC = New-RunRecord -Vault (Join-Path $tmp 'vaultC') -Result $piiC -Station 'BUILD'
 Assert 'content-PII run flagged pii'     ($rrC.pii -eq $true)
 
+Write-Host "`n[9] Non-engagement: presence is not participation" -ForegroundColor Cyan
+Assert 'flags "what would you like me to do"'  (Test-NonEngagement "I'm set up and ready. What would you like me to do?")
+Assert 'flags "I do not see a specific task"'  (Test-NonEngagement "I don't see a specific task in your message yet.")
+Assert 'substantive reply counts as engaged'   (-not (Test-NonEngagement ('Here is the concrete plan and the reasoning behind it. ' * 20)))
+$mockClaudeIdle = { param($p) [pscustomobject]@{ text='I am set up and ready in the working directory. What would you like me to work on?'; exitCode=0; timedOut=$false; ok=$true } }
+$r3 = Invoke-Orchestration -Task 'XXGOALXX' -WorkDir $tmp -Rounds 2 -ClaudeInvoker $mockClaudeIdle -CodexInvoker $mockCodexOk
+Assert 'idle Claude is NOT labelled two-agent' ($r3.mode -ne 'two-agent')
+Assert 'idle Claude marks the run degraded'    ($r3.degraded -eq $true)
+
 Remove-Item -LiteralPath $tmp -Recurse -Force -ErrorAction SilentlyContinue
 
 Write-Host ""

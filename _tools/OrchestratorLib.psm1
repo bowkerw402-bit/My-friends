@@ -193,6 +193,27 @@ function Invoke-CodexTurn {
     }
 }
 
+function Test-NonEngagement {
+    # True when a reply is the agent asking what to do instead of doing it. The honesty check used to
+    # measure presence (did text come back) rather than participation (did it engage with the task).
+    param([string]$Reply)
+    if ([string]::IsNullOrWhiteSpace($Reply)) { return $true }
+    $t = $Reply.Trim()
+    if ($t.Length -gt 1500) { return $false }      # long answers are substantive by definition
+    $patterns = @(
+        "what would you like (me )?to",
+        "i don'?t see a (specific )?task",
+        "what'?s the (task|ask|priority|goal)",
+        "just tell me the task",
+        "how can i help",
+        "let me know what you'?d like",
+        "what do you want me to",
+        "ready (and waiting|to work).{0,40}\?"
+    )
+    foreach ($p in $patterns) { if ($t -imatch $p) { return $true } }
+    return $false
+}
+
 function Test-CodexChannel {
     # Preflight probe: is Codex actually answering? Returns a structured verdict so the
     # run can be honestly marked single-agent (or aborted) instead of silently faking it.
@@ -253,9 +274,11 @@ function Invoke-Orchestration {
         $t0 = (Get-Date).ToString('o')
         $c  = & $ClaudeInvoker $cPrompt
         $t1 = (Get-Date).ToString('o')
-        $cStatus = if ($c.ok) { 'ok' } else { 'error' }
+        $cEngaged = ($c.ok) -and (-not (Test-NonEngagement $c.text))
+        $cStatus = if (-not $c.ok) { 'error' } elseif (-not $cEngaged) { 'no-engagement' } else { 'ok' }
         $cTools  = @($c.tools | Where-Object { $_ })
-        if ($c.ok) { $claudeSpoke = $true } else { $degraded = $true }   # a failed Claude turn is a degraded run
+        # only a turn that actually engaged counts as taking part
+        if ($cEngaged) { $claudeSpoke = $true } else { $degraded = $true }
         [void]$turns.Add([pscustomobject]@{
             agent = 'claude'; round = $r; startedAt = $t0; endedAt = $t1
             promptSent = $cPrompt; reply = $c.text
@@ -272,8 +295,10 @@ function Invoke-Orchestration {
         $t2 = (Get-Date).ToString('o')
         $x  = & $CodexInvoker $xPrompt
         $t3 = (Get-Date).ToString('o')
-        $xStatus = if ($x.ok) { 'ok' } elseif ($x.timedOut) { 'timeout' } else { 'no-output' }
-        if (-not $x.ok) { $degraded = $true; $codexStatus = $xStatus }
+        $xEngaged = ($x.ok) -and (-not (Test-NonEngagement $x.text))
+        $xStatus = if (-not $x.ok) { if ($x.timedOut) { 'timeout' } else { 'no-output' } }
+                   elseif (-not $xEngaged) { 'no-engagement' } else { 'ok' }
+        if (-not $xEngaged) { $degraded = $true; $codexStatus = $xStatus }
         $xReply = if ($x.ok) { $x.text } else { "(Codex NO OUTPUT - status=$xStatus, exit=$($x.exitCode)) - reply not fabricated" }
         $xTools = @(Get-ToolsFromText $xReply)
         [void]$turns.Add([pscustomobject]@{
@@ -282,8 +307,8 @@ function Invoke-Orchestration {
             status = $xStatus; exitCode = $x.exitCode
             tools = $xTools; toolsVerified = $false     # Codex tools are self-declared (not yet traced)
         })
-        if ($x.ok) { $codexSpoke = $true }
-        if ($x.ok -and ($x.text -match '\[DONE\]')) { $done = $true; $doneReason = '[DONE] by Codex' }
+        if ($xEngaged) { $codexSpoke = $true }
+        if ($xEngaged -and ($x.text -match '\[DONE\]')) { $done = $true; $doneReason = '[DONE] by Codex' }
     }
 
     $bothSpoke = $claudeSpoke -and $codexSpoke
@@ -606,4 +631,5 @@ Export-ModuleMember -Function `
     Set-Utf8Console, Write-Utf8NoBom, Add-Utf8NoBom, Read-Utf8, New-Slug, `
     Build-Convo, Build-Prompt, Invoke-ClaudeTurn, Invoke-CodexTurn, Test-CodexChannel, `
     Invoke-Orchestration, Add-SessionsIndex, Invoke-VaultCommit, `
-    Test-PiiPath, Test-PiiContent, Get-ToolsFromTurns, ConvertTo-TranscriptMarkdown, New-RunRecord, Add-RunIndexLine
+    Test-PiiPath, Test-PiiContent, Test-NonEngagement, Get-ToolsFromText, Get-ToolsFromTurns, `
+    ConvertTo-TranscriptMarkdown, New-RunRecord, Add-RunIndexLine

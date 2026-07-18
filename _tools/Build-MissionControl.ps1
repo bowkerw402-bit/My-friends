@@ -26,4 +26,7 @@ if ($Commit) {
         -Message ("mission-control: " + (Get-Date).ToString('yyyy-MM-dd HH:mm'))
     Write-Host "  committed + pushed" -ForegroundColor DarkGray
 }
+# keep the Desktop transcript reader current
+try { & (Join-Path $PSScriptRoot 'Build-TranscriptIndex.ps1') | Out-Null } catch { }
+
 if ($Open) { try { Invoke-Item -LiteralPath (Join-Path $Vault 'mission-control\DAILY.md') } catch { } }
