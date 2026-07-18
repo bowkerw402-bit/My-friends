@@ -4,49 +4,53 @@ updated: 2026-07-18
 status: active
 ---
 
-# BBS + Evidence Desk — status & schedule
+# BBS and Evidence Desk, status and schedule
 
-**Bowker's Business Services (BBS)** is the umbrella brand; **Evidence Desk** (V-2026-023) is its flagship
-service line. Three lines share **one engine and one bank account**: Evidence Desk, Automation Services, NDIS
-Audit Desk. The design is *build once, sell many* — a shared card-engine + generators + a brand seam
-(`studio/brand.json`), with a per-niche config file per service.
+**Bowker's Business Services (BBS)** is the umbrella brand. **Evidence Desk** (V-2026-023) is its flagship
+service line. Three lines share one engine and one bank account: Evidence Desk, Automation Services, NDIS
+Audit Desk. The design is build once, sell many: a shared card engine plus generators plus a brand seam
+(`studio/brand.json`), with one config file per niche.
 
-> **The one thing that matters (Codex's read, confirmed by recon):** the blocker is NOT building — it's that
-> outreach is **drafted but unsent**, deliverability is **unverified**, and there are **zero real conversations**.
-> Everything is built (97 prospect pages, 94 PDFs, the engine, both storefronts). More building won't validate demand.
+> **The one thing that matters** (Codex's read, confirmed by recon): the blocker is not building. Outreach is
+> drafted but unsent, deliverability is unverified, and there are zero real conversations. Everything is
+> already built (97 prospect pages, 94 PDFs, the engine, both storefronts). More building will not validate demand.
+
+## Decisions
+**2026-07-18, the live static storefront is canonical.** Will's call. The unpublished Next.js version (the
+one with the 3D monogram) is superseded and gets archived, never deleted.
+**Before it is archived:** the NDIS service page exists only in that unpublished version, so it must be
+rebuilt on the live site first. Until then the folder stays where it is, marked superseded.
 
 ## State snapshot
-| Line / piece | State | Note |
+| Line or piece | State | Note |
 |---|---|---|
-| Evidence Desk engine + automation (19 scripts) | **BUILT** | niche-agnostic core; gov niche populated |
-| Storefront A (static) — home + /automation + 5 lanes | **LIVE** | bowkerbusinessesservices.com |
-| Storefront B (Next.js + 3D) | **BUILT, not deployed** | different look (navy/champagne); NDIS /ndis page lives only here |
-| Evidence Desk outreach (drafts) | **GATE** | drafted in Gmail; **none sent** |
-| Automation Services funnel + 11 recipes + audit engine | **BUILT** | GTM direction **not chosen** (1 of 5) |
-| NDIS Audit Desk (kit + engine renderer + sample) | **BUILT** | VALIDATION green; 32 prospects listed |
-| Clients | **0** | across all three lines |
+| Evidence Desk engine and automation (19 scripts) | BUILT | niche agnostic core, gov niche populated |
+| Live storefront: home, /automation, 5 lanes | LIVE | bowkerbusinessesservices.com. **Canonical.** |
+| Unpublished Next.js storefront (3D monogram) | SUPERSEDED | archive after the NDIS page is rebuilt on the live site |
+| Evidence Desk outreach drafts | GATE | drafted in Gmail, none sent |
+| Automation Services funnel, 11 recipes, audit engine | BUILT | go to market direction not chosen (1 of 5) |
+| NDIS Audit Desk kit, engine renderer, sample report | BUILT | validation green, 32 prospects listed |
+| Clients | 0 | across all three lines |
 
-## Fix-first (cheap, removes footguns) — agents can do now
-- **D1/D2 — reconcile the two storefronts:** pick one canonical codebase; the local Netlify link points at a **dead site** (deploy footgun). Analysis + a decision doc only — no deploy. *(Claude)*
-- **D3 — add the missing `netlify.toml`** to the static bundle. *(Claude)*
-- **QA** the 97 pages / 94 PDFs against the locked design system. *(Claude)*
+## Agents can do now, no gate
+- Rebuild the NDIS service page on the live static site, so the unpublished version can be archived safely. (Claude)
+- Add the missing `netlify.toml`, and fix the local Netlify link that points at a dead site. (Claude)
+- Enrich NDIS prospects and draft batch 1 as file drafts. (Codex, see the outbound email handoff)
+- QA the 97 pages and 94 PDFs against the locked design system. (Claude)
+- Prepare the discovery call script, free artifact offer, and post call template. (Claude)
 
-## The schedule (ranked, owner-assigned)
-| # | Next action | Owner | Why it's theirs | Blocked by |
-|---|---|---|---|---|
-| 1 | **Verify deliverability** — inbox placement + SPF/DKIM/DMARC on the real sending identity, and fix the Gmail wrong-account issue | **Will** (+ Codex drafts the check) | needs account access + real sends | you |
-| 2 | **Approve + send one bounded outreach tranche** from the staged drafts | **Will** | outward communication is human-only | #1 |
-| 3 | **Enrich NDIS prospects + draft batch 1** as file drafts | **Codex** | Codex owns email/GitHub; not gated | nothing |
-| 4 | **Prepare the discovery-call script + free-artifact offer + post-call template** | **Claude** | drafting supports the human gate; not gated | nothing |
-| 5 | **Payment readiness** — lawyer-reviewed terms, GST decision, Stripe re-brand (it currently says "CF Restoration Services"), test checkout, consent/AI-disclosure | **Will** | legal/tax/money/identity are human-only | professional advice |
+## The schedule, ranked
+| # | Next action | Owner | Blocked by |
+|---|---|---|---|
+| 1 | Verify email deliverability (inbox placement, SPF, DKIM, DMARC) and fix the wrong Gmail account | **Will** | you |
+| 2 | Approve and send one bounded outreach tranche from the staged drafts | **Will** | #1 |
+| 3 | Enrich NDIS prospects and draft batch 1 | Codex | nothing |
+| 4 | Rebuild the NDIS page on the live site, then archive the unpublished storefront | Claude | nothing |
+| 5 | Payment readiness: lawyer reviewed terms, GST, Stripe rebrand (it currently reads "CF Restoration Services"), test checkout, consent | **Will** | professional advice |
 
-## All Will-gates (the human bottleneck)
-Approve/send outreach · Stripe re-brand to BBS + test→live · lawyer-reviewed terms · A$750 pilot deposit ·
-**NDIS: buy PI insurance** · deploy the `/ndis` page · pick the canonical storefront · pick 1 of 5 automation
-directions · add Netlify email notifications (+ delete the 1 test submission) · GST + PII-sync + AI-disclosure decisions.
+## Every gate that is yours
+Approve and send outreach, Stripe rebrand to BBS then test to live, lawyer reviewed terms, the A$750 pilot
+deposit, buy PI insurance for NDIS, deploy approval, pick 1 of 5 automation directions, add Netlify email
+notifications and delete the 1 test submission, GST and PII sync and AI disclosure decisions.
 
-## What the agents can do without you
-Codex: NDIS email enrichment + batch-1 drafts (see the outbound-email handoff). Claude: storefront
-reconciliation doc · netlify.toml · page/PDF QA · discovery-call kit · stage unified studio copy (no deploy).
-
-_This file is the living tracker. Re-run the schedule anytime with `run "refresh the BBS schedule" govt-supplier-evidence-desk`._
+_Living tracker. Refresh it with `run "refresh the BBS schedule" govt-supplier-evidence-desk`._
