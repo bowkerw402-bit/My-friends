@@ -385,3 +385,53 @@ hairlines with a **smaller bevel**, not a heavier face.
 **Sanity-check before shipping:** compare a glyph against a known-good typeface.json. Coordinates
 should sit in the 0–1000 font-unit range with y increasing upward. If they cluster near zero or go
 negative where they should be positive, the coordinate source is wrong.
+
+
+---
+
+## 9. EXTRUDED TYPE READS AS PLASTIC — and the debugging rule that came out of fixing it
+
+`ExtrudeGeometry` emits **non-indexed** geometry, so `computeVertexNormals` produces flat per-face
+normals: a glyph's entire front face shares ONE normal. On a mostly-diffuse material, constant
+irradiance on a constant normal is **literally one colour**. Measured on a shipping build:
+**2,188 px of exactly `#d6d5d5`** across the ivory letters, 586 px of exactly `#bd9d4f` across the
+gold. That is the whole reason 3D type looks like moulded plastic.
+
+Two fixes, both free if you already build the wordmark glyph-by-glyph (which you must anyway,
+because **three.js r128 applies no kerning**):
+
+1. **Per-glyph micro-rotation** — index-hashed so it stays deterministic, ±2–3°. Each letter then
+   samples the environment from a different direction. Varies tone BETWEEN letters.
+2. **A fine micro-relief normal map** — per-PIXEL normal variation, so a single face samples a
+   RANGE of the environment instead of one direction. This is what turns a flat fill into a
+   gradient. Amplitude should read as "the surface isn't mathematically perfect", never as texture.
+
+Measured effect on the largest single-colour region: 7.6% → 5.1% (rotation) → 4.4% (normal map).
+
+### The debugging rule — worth more than the fix
+
+The normal map at `normalScale 0.18` was a **complete no-op** (4358 unique colours vs 4357 without
+it — noise). The tempting next move is to go hunting for why it "doesn't work": missing UVs,
+missing tangents, wrong wrap mode, material not rebuilt. All plausible, all wrong.
+
+> **Before diagnosing why an effect isn't working, push its parameter to an absurd value to prove
+> the channel is live.**
+
+Setting it to 2.5 made the flat region vanish instantly — so it *was* reaching the shader and the
+amplitude was simply ~14× too small. One test separates **"not wired up"** from **"wired up but too
+subtle"**, and those two have completely different fixes. This is the same discipline as finding the
+discriminating frame: make the experiment answer a binary question rather than a vague one.
+
+### Two type-specific rules
+
+- **`bevelSize` ≤ ~25% of the THINNEST stroke, not the thickest.** Bevels apply outward on every
+  edge, so an oversized one eats hairlines *and* closes the gaps between letters. At a serif's
+  concave bracket, a bevel wider than the fillet radius inverts it into folded, self-intersecting
+  facets — which under clearcoat read as bright wrong-facing specular chips.
+- **Extrude depth 0.3–0.6× stem width**, not ~1×. Depth equal to the stem is a plastic
+  block-letter proportion, and if the camera views the glyphs near their own normal you barely see
+  the side walls anyway — so excess depth buys a weight defect (outer glyphs gain apparent weight
+  from visible side walls, inner ones don't) instead of dimensionality.
+
+**Verify the property landed, don't assume the edit did.** One material silently never received the
+normal map because a string anchor didn't match. `grep` for the applied property afterwards.
