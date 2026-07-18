@@ -70,6 +70,28 @@ function Get-RunManifests {
     return @($out | Sort-Object endedAt -Descending)
 }
 
+function Get-OpenHandoffs {
+    # Handoffs were being written and never read. Surface any still marked open.
+    param([Parameter(Mandatory=$true)][string]$Vault)
+    $dir = Join-Path $Vault 'handoffs'
+    $out = @()
+    if (-not (Test-Path -LiteralPath $dir)) { return $out }
+    foreach ($f in Get-ChildItem -LiteralPath $dir -File -Filter *.md -ErrorAction SilentlyContinue) {
+        if ($f.Name -eq 'README.md') { continue }
+        $t = _ReadUtf8 $f.FullName
+        if ($t -match '(?im)^status:\s*open\s*$') {
+            $to = 'someone'
+            $m = [regex]::Match($t, '(?im)^to:\s*(\w+)')
+            if ($m.Success) { $to = $m.Groups[1].Value }
+            $title = $f.BaseName
+            $tm = [regex]::Match($t, '(?m)^#\s*Handoff:\s*(.+?)\s*\(')
+            if ($tm.Success) { $title = $tm.Groups[1].Value.Trim() }
+            $out += [pscustomobject]@{ to = $to; title = $title; file = $f.Name }
+        }
+    }
+    return @($out)
+}
+
 function Get-OpenGates {
     # Ventures with unchecked approval items awaiting Will (willsideas ops/approvals-queue.md).
     param([Parameter(Mandatory=$true)][string]$BusinessRoot)
@@ -139,13 +161,13 @@ function ConvertTo-BoardMarkdown {
 }
 
 function ConvertTo-DailyMarkdown {
-    param([Parameter(Mandatory=$true)]$Items, $Manifests = @(), $Gates = @(), [int]$SinceHours = 24, [double]$HoursSinceLast = 0, $Recent = @())
+    param([Parameter(Mandatory=$true)]$Items, $Manifests = @(), $Gates = @(), [int]$SinceHours = 24, [double]$HoursSinceLast = 0, $Recent = @(), $Handoffs = @())
     $sb = [System.Text.StringBuilder]::new()
     [void]$sb.Append("# DAILY - ").Append((Get-Date).ToString('dddd, yyyy-MM-dd')).Append("`n`n")
     [void]$sb.Append("_Mission Control morning digest. Generated ").Append((Get-Date).ToString('HH:mm')).Append("._`n")
     if ($HoursSinceLast -gt 26) {
         $days = [math]::Floor($HoursSinceLast / 24)
-        [void]$sb.Append("`n> **STALE ALARM** - previous report was ").Append($HoursSinceLast).Append("h ago (~").Append($days).Append("d). The 06:45 job likely missed a run (PC asleep, git push blocked, or a script error). Check Task Scheduler -> MissionControl-MorningReport.`n")
+        [void]$sb.Append("`n> **STALE ALARM** - previous report was ").Append($HoursSinceLast).Append("h ago (~").Append($days).Append("d). The morning routine missed a run (app closed, git push blocked, or a script error). Check the **morning-report** routine in the Scheduled section of the sidebar.`n")
     }
 
     # --- Runs ---
@@ -178,14 +200,16 @@ function ConvertTo-DailyMarkdown {
     }
 
     # --- Needs attention ---
-    $bad = @($mans | Where-Object { $_.manifest.mode -ne 'two-agent' -or $_.manifest.review_verdict -eq 'FAIL' })
+    $bad = @($mans | Where-Object { $_.manifest.mode -ne 'two-agent' -or $_.manifest.review_verdict -eq 'FAIL' -or $_.manifest.outcome -eq 'incomplete' })
     [void]$sb.Append("`n## Needs attention  -  ").Append($bad.Count).Append("`n`n")
     if ($bad.Count -eq 0) {
         [void]$sb.Append("_Nothing flagged._`n")
     } else {
         foreach ($m in $bad) {
             $o = $m.manifest
-            $why = if ($o.mode -ne 'two-agent') { "ran " + $o.mode + " (codex: " + $o.codex_status + ") - consider re-running" } else { "review FAILED" }
+            $why = if ($o.mode -ne 'two-agent') { "ran " + $o.mode + " (codex: " + $o.codex_status + "), consider re-running" }
+                   elseif ($o.outcome -eq 'incomplete') { "did not finish, it ran out of rounds without the agents agreeing" }
+                   else { "review verdict was FAIL" }
             [void]$sb.Append("- ").Append($o.task).Append(" - ").Append($why).Append("`n")
         }
     }
@@ -198,6 +222,17 @@ function ConvertTo-DailyMarkdown {
     } else {
         foreach ($x in $g) {
             [void]$sb.Append("- **").Append($x.venture).Append("**: ").Append($x.open).Append(" item(s) in approvals-queue`n")
+        }
+    }
+
+    # --- Open handoffs between the agents ---
+    $ho = @($Handoffs)
+    [void]$sb.Append("`n## Open handoffs  -  ").Append($ho.Count).Append("`n`n")
+    if ($ho.Count -eq 0) {
+        [void]$sb.Append("_None waiting._`n")
+    } else {
+        foreach ($x in $ho) {
+            [void]$sb.Append("- to **").Append($x.to).Append("**: ").Append($x.title).Append("  (handoffs/").Append($x.file).Append(")`n")
         }
     }
 
@@ -234,8 +269,9 @@ function Update-MissionControl {
     $gates = if ($BusinessRoot) { Get-OpenGates -BusinessRoot $BusinessRoot } else { @() }
 
     _WriteUtf8 (Join-Path $mcDir 'BOARD.md') (ConvertTo-BoardMarkdown -Items $items)
-    $recent = Get-RecentlyTouched -Vault $Vault -Top 5
-    _WriteUtf8 (Join-Path $mcDir 'DAILY.md') (ConvertTo-DailyMarkdown -Items $items -Manifests $mans -Gates $gates -SinceHours $SinceHours -HoursSinceLast $hoursSince -Recent $recent)
+    $recent   = Get-RecentlyTouched -Vault $Vault -Top 5
+    $handoffs = Get-OpenHandoffs -Vault $Vault
+    _WriteUtf8 (Join-Path $mcDir 'DAILY.md') (ConvertTo-DailyMarkdown -Items $items -Manifests $mans -Gates $gates -SinceHours $SinceHours -HoursSinceLast $hoursSince -Recent $recent -Handoffs $handoffs)
     _WriteUtf8 $hbPath ((Get-Date).ToString('o'))
     return [pscustomobject]@{
         board = (Join-Path $mcDir 'BOARD.md'); daily = (Join-Path $mcDir 'DAILY.md')
@@ -244,5 +280,5 @@ function Update-MissionControl {
 }
 
 Export-ModuleMember -Function `
-    Resolve-LedgerStage, Read-Ledger, Get-RunManifests, Get-OpenGates, Get-RecentlyTouched, `
+    Resolve-LedgerStage, Read-Ledger, Get-RunManifests, Get-OpenGates, Get-OpenHandoffs, Get-RecentlyTouched, `
     ConvertTo-BoardMarkdown, ConvertTo-DailyMarkdown, Update-MissionControl

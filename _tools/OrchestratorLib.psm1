@@ -101,7 +101,9 @@ Your turn. Engage $Other directly and substantively - this is a real collaborati
 - If $Other has already spoken, quote a short specific phrase of theirs and respond to it: agree WITH A
   REASON, or push back WITH A REASON. Add something they did not.
 - Lead with your single most important concrete point in the first line.
-If your turn is a REVIEW of $Other's work, end with a verdict line: "VERDICT: PASS", "VERDICT: PASS-with-locks",
+End EVERY turn with a line listing what you actually used, like: "TOOLS-USED: Read, Bash (ls), Grep". If you
+used nothing, write "TOOLS-USED: none". This is recorded as the run's tool ledger.
+If your turn is a REVIEW of $Other's work, also end with a verdict line: "VERDICT: PASS", "VERDICT: PASS-with-locks",
 or "VERDICT: FAIL". That line is recorded as the run's review verdict.
 Be concrete (aim under ~250 words). Do real work in the directory when it helps. Do NOT use [DONE] on your
 opening turn before $Other has replied. Only once $Other has responded AND you both genuinely agree the
@@ -328,6 +330,8 @@ function Invoke-Orchestration {
         twoAgent     = [bool]$bothSpoke
         degraded     = [bool]$degraded
         mode         = $mode
+        # a run that merely ran out of rounds did NOT finish: say so rather than implying success
+        outcome      = if ($done) { 'complete' } else { 'incomplete' }
         codexStatus  = $codexStatus
         doneReason   = $doneReason
         startedAt    = $startedAt
@@ -378,6 +382,9 @@ function Invoke-VaultCommit {
     $held = $false
     try {
         try { $held = $mtx.WaitOne([TimeSpan]::FromSeconds(120)) } catch { $held = $false }
+        if (-not $held) {
+            Write-Host "[WARN] vault lock not acquired after 120s. Another run or routine may be committing. Proceeding, but a git conflict is possible." -ForegroundColor Yellow
+        }
         Push-Location $Vault
         try {
             & git.exe pull --rebase --autostash -q 2>$null | Out-Null
@@ -585,6 +592,7 @@ function New-RunRecord {
         started_at     = $Result.startedAt
         ended_at       = $Result.endedAt
         mode           = $Result.mode
+        outcome        = $Result.outcome
         two_agent      = [bool]$Result.twoAgent
         degraded       = [bool]$Result.degraded
         rounds_planned = $Result.roundsPlanned

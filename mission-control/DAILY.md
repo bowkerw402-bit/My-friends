@@ -1,6 +1,6 @@
 # DAILY - Sunday, 2026-07-19
 
-_Mission Control morning digest. Generated 09:46._
+_Mission Control morning digest. Generated 09:55._
 
 ## Runs (last 24h)  -  3
 
@@ -21,6 +21,10 @@ _Nothing flagged._
 ## Open gates awaiting you  -  1
 
 - **govt-supplier-evidence-desk**: 4 item(s) in approvals-queue
+
+## Open handoffs  -  1
+
+- to **codex**: outbound email ownership  (handoffs/2026-07-18-claude-to-codex-outbound-email.md)
 
 ## Portfolio  -  92 ventures
 
