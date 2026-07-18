@@ -1,0 +1,56 @@
+{
+    "schema":  "runrecord/v1",
+    "run_id":  "2026-07-18--1133--capstone-review-of-a-newly-built-two-age",
+    "slug":  "capstone-review-of-a-newly-built-two-age",
+    "task":  "CAPSTONE REVIEW of a newly built two-agent operating system (Claude Code + Codex). The working directory IS the shared vault. First READ README.md, _reference/the-line.md, and _reference/runrecord.md here to understand the system: The Line (CAPTURE-\u003eFRAME-\u003ePLAN-\u003eBUILD-\u003eREVIEW-\u003eSHIP-\u003eLEARN funnel with a Brief lock and a Review lock), Mission Control (committed Run Records + a morning DAILY.md), and the orchestrator (Codex health-check so runs are honestly two-agent/single-agent, draft-only rules, a PII gate). Then adversarially review it as two INDEPENDENT engines:\n- Claude: name the 3 biggest strengths, then the single highest-value follow-up.\n- Codex: independently pressure-test it - the top 2 risks or gaps that could bite Will later. Be specific and skeptical; do NOT just agree.\nConverge on a shared punch-list: the top 3 next actions, ranked. Keep each turn under ~200 words. This is READ-ONLY - do NOT modify any files. End each message with a \u0027TOOLS-USED: ...\u0027 line. Once you both agree on the punch-list, end your message with [DONE].",
+    "station":  "BUILD",
+    "venture":  "",
+    "work_dir":  "C:\\Users\\bowke\\OneDrive\\Documents\\GitHub\\My-friends",
+    "started_at":  "2026-07-18T11:31:37.4180958+10:00",
+    "ended_at":  "2026-07-18T11:33:21.1657785+10:00",
+    "mode":  "two-agent",
+    "two_agent":  true,
+    "degraded":  false,
+    "rounds_planned":  3,
+    "rounds_run":  2,
+    "done_reason":  "[DONE] by Claude (after Codex replied)",
+    "agents":  [
+                   {
+                       "name":  "claude",
+                       "turns":  2,
+                       "statuses":  [
+                                        "ok"
+                                    ]
+                   },
+                   {
+                       "name":  "codex",
+                       "turns":  1,
+                       "statuses":  [
+                                        "ok"
+                                    ]
+                   }
+               ],
+    "codex_status":  "ok",
+    "tools_declared":  [
+
+                       ],
+    "tools_used":  [
+                       "Read (README",
+                       "the-line.md",
+                       "runrecord.md)",
+                       "Bash (ls runs/log/ledger/templates/tools",
+                       "find)",
+                       "Grep(none)"
+                   ],
+    "outputs":  [
+
+                ],
+    "review_verdict":  "",
+    "ledger_touched":  [
+
+                       ],
+    "pii_present":  false,
+    "encoding":  "utf-8",
+    "commit":  null,
+    "orchestrator_version":  "2.0.0"
+}
