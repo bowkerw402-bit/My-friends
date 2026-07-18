@@ -5,6 +5,24 @@ updated: 2026-07-18
 
 # Ways of working
 
+## Real deliverables go on the Desktop (set 2026-07-18)
+**The rule:** if it is actual output Will needs to use, read, or show to someone, it goes on his Desktop in
+one clearly named folder. Not buried in the repo, not a loose local HTML file, and never three similar
+files he has to guess between.
+
+**Will's words:** "if I wanna see material, like a folder or a file or a Word doc or just any type of
+information, put it on my desktop because I would like to actually see it instead of having to dig around."
+
+**The stipulation, and it matters:** this applies only to real output. Working files, intermediate drafts,
+scripts, configs, run records, and anything the system reads but Will does not, all stay in the repo. The
+Desktop is only for things he will actually open.
+
+**How to do it properly:**
+- One folder per deliverable, named in plain words for what it is, for example "Evidence Desk Call Pack".
+- When a deliverable is updated, replace the file in place. Never leave a second copy, so there is never a
+  question about which one is current.
+- Say where it is, by name, when handing it over.
+
 ## Recent work is the priority signal (set 2026-07-18)
 The things touched most recently are almost always the things that matter. Timestamp everything, track
 when it was last updated, and surface the most recent handful first. Do not resurface old items just
