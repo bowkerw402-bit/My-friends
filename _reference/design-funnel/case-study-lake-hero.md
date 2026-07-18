@@ -280,6 +280,49 @@ materials with no map at all**, and they are the second-largest region in frame 
 occupies the most pixels while receiving the least attention."** In this frame that was the terrain,
 and it had been sitting there untouched for eleven rounds.
 
+## Round 12 — v4.0 — "redesign the text it doesn't fit well"
+
+The cause was **mechanical, not aesthetic**, and it had been sitting there since round 3: the hero
+wordmark was **the only off-brand type on the page**.
+
+| | site brand mark (`.nav-mark span`, every page) | the hero wordmark |
+|---|---|---|
+| face | EB Garamond | gentilis_bold |
+| case | UPPERCASE | mixed |
+| tracking | .18em | 0 |
+| colour | single ink | two (gold + ivory) |
+
+It shared **not one attribute**. Everything else on the page — kicker, subline, the whole site —
+already used EB Garamond and Montserrat.
+
+> **When someone says a design element "doesn't fit", check whether it literally fails to match the
+> brand's own specimen before reaching for taste.** Grep the stylesheet for the real lockup first.
+
+**Getting a brand font into 3D.** `TextGeometry` needs three.js's own `typeface.json`, which is the
+friction that causes people to ship whatever stock font is lying around. Converter and its three
+silent traps are in [tools.md](tools.md) / `tools/ttf-to-typeface.mjs`. The one that would have
+shipped broken: `glyph.getPath()` returns **render** coordinates (y-flipped into screen space), not
+font units — caught only by diffing coordinates against a known-good typeface.json *before*
+rendering.
+
+**The defect no parameter could fix.** In Garamond the natural white gap *inside* "AP" measures
+~412/1000 em — **wider than the font's own word space** — so the largest element on the page read
+"A PLakeside". **three.js r128 applies no kerning whatsoever.** No TextGeometry option addresses
+this; glyphs have to be placed by hand. That turned out to be a gift: hand-placement is also how you
+get letter-spacing, so building the wordmark glyph-by-glyph with uniform .18em tracking fixed the
+brand mismatch AND the split in one move.
+
+**Composition, measured rather than eyeballed.** A critic projected the world coordinates through
+the resting camera and found the wordmark's cap line sat tangent to the far-shore crest AND the
+ridgeline, with the bright foreshore waterline cutting the letters at 37% of their height — the
+single busiest horizontal band available. It also measured the same width as its own 11px kicker,
+so it had no scale dominance either. Moving it onto clean dark water gave it contrast, a clear
+field, and its reflection.
+
+> **Method note:** projecting world coordinates through the camera to get real percentage positions
+> beats looking at a screenshot. "It collides with the ridgeline at 29.7%" is actionable; "it looks
+> a bit busy" is not.
+
 ## The transferable pattern
 
 1. **The symptom is never the cause.** Broken-U → not rotation. Matte gold → not the material.
