@@ -1,6 +1,6 @@
 # BOARD - Venture funnel state
 
-_Generated 2026-07-18 14:19 from Business/_ideas/LEDGER.md. Read-only view - edit state in the ledger._
+_Generated 2026-07-18 14:20 from Business/_ideas/LEDGER.md. Read-only view - edit state in the ledger._
 
 **92 ventures** | In Flight: 3 | Backlog: 63 | Parked: 19 | Killed: 6
 
