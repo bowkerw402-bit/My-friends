@@ -250,6 +250,36 @@ worse than no clouds*, which is his own rule from the box-geometry landmark, app
 **Seed procedural textures.** The noise uses mulberry32 with a fixed seed. An unseeded texture
 changes every load, which destroys `?pose` reproducibility and makes any pixel baseline worthless.
 
+## Round 11 — v3.9 — "keep pushing"
+
+Went looking for the largest *areas* still doing the least work, rather than polishing what was
+already good. The answer was embarrassing: **the hills and shoreline were flat single-colour
+materials with no map at all**, and they are the second-largest region in frame after the water.
+
+- **Flat fill is the loudest "painted cardboard" tell there is.** A greyscale `map` MULTIPLIES the
+  material colour, so ONE procedural mottle texture varies every landmass without touching any
+  brand palette — clumped dark patches read as tree canopy, lighter ones as dry grass between.
+  Keep the range SHALLOW (0.66–1.0): terrain at distance has low local contrast, and heavy mottle
+  reads as noise, not vegetation.
+- **Waterline haze.** Over water, distance haze is densest exactly at the land/water junction.
+  Without it the shore meets the lake on a hard graphic line — a strong "diagram, not photograph"
+  signal, and one of the cheapest realism wins available.
+- **Ripple scale and anisotropy are coupled.** Dropping the water's normal tiling from 6.0 to 4.2
+  gave the near field real surface texture — but a finer tiling at grazing angles only works
+  *because* anisotropic filtering went in two rounds earlier. Alone, either change is wrong: coarse
+  tiling looks flat, fine tiling without anisotropy crawls into speckle.
+- **Audit for the one surface that missed the treatment.** The emblem's ivory waves were still matte
+  in a mark otherwise made entirely of clearcoat gold — they read as flat plastic ribbons beside it.
+  They also needed the *studio* env like the gold, or ivory goes dull in a scene whose own env is a
+  dim sky. When you upgrade a material family, grep for everything in that family.
+- **Deduplicate procedural helpers.** The clouds had their own private copy of the seeded noise;
+  extracted to one shared `NZ`. Two implementations of the same function is precisely the drift the
+  design-bench scanner exists to catch — writing it twice in my own file was not a good look.
+
+**Method note:** the useful question at this stage is not "what looks bad" but **"which surface
+occupies the most pixels while receiving the least attention."** In this frame that was the terrain,
+and it had been sitting there untouched for eleven rounds.
+
 ## The transferable pattern
 
 1. **The symptom is never the cause.** Broken-U → not rotation. Matte gold → not the material.
