@@ -219,6 +219,37 @@ The rest of the round:
 - **A small glow on the type** while staying LED: raise the emissive floor so letter cores clear the
   bloom threshold, keep the radius tight. Glow comes from the threshold, crispness from the radius.
 
+## Round 10 — v3.8 — "more."
+
+No specifics, so the job was to find the remaining ceilings myself. Three, and the ordering was
+wrong in my head before I measured.
+
+**The faceting was the TYPE, not the scene.** `curveSegments: 6` on a serif face facets every bowl
+(O, e, s, a); `bevelSegments: 3` stairsteps the exact edge that catches the light. Raised to 18/6.
+**Type is the highest-scrutiny geometry on any page** — it is what the eye lands on and reads at
+100%, and it was the coarsest thing in a scene where the hills had 128x64.
+
+**Shadow density is `mapSize / extent`, not `mapSize`.** Tightening the shadow camera from 44 to 30
+units raises texel density faster than doubling the map — doing both gave ~4.5x.
+
+**Clouds took two failed attempts, and both failures were structural:**
+
+1. A high horizontal cloud LAYER rendered **nothing at all**. The camera far plane is 300 units, and
+   a layer at altitude only reaches the horizon thousands of units out — clipped long before it
+   entered the thin band of sky the framing shows. (`THREE.Sky` gets away with a 6000-unit scale
+   because its vertex shader forces `gl_Position.z = w`; ordinary geometry does not.)
+   → **Check the far plane before placing anything distant.**
+2. Replacing it with sprite banks showed **the sprites' own rectangles** as translucent panels in
+   the sky, because the noise texture had no alpha falloff at its borders.
+   → **Any sprite-based natural element needs its alpha faded to zero at all four edges**, or the
+   quad boundary becomes the most visible thing in frame.
+
+Result kept deliberately faint — thin high haze that breaks the flat gradient. *Bad clouds are far
+worse than no clouds*, which is his own rule from the box-geometry landmark, applied to myself.
+
+**Seed procedural textures.** The noise uses mulberry32 with a fixed seed. An unseeded texture
+changes every load, which destroys `?pose` reproducibility and makes any pixel baseline worthless.
+
 ## The transferable pattern
 
 1. **The symptom is never the cause.** Broken-U → not rotation. Matte gold → not the material.
