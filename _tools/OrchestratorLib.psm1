@@ -101,6 +101,8 @@ Your turn. Engage $Other directly and substantively - this is a real collaborati
 - If $Other has already spoken, quote a short specific phrase of theirs and respond to it: agree WITH A
   REASON, or push back WITH A REASON. Add something they did not.
 - Lead with your single most important concrete point in the first line.
+If your turn is a REVIEW of $Other's work, end with a verdict line: "VERDICT: PASS", "VERDICT: PASS-with-locks",
+or "VERDICT: FAIL". That line is recorded as the run's review verdict.
 Be concrete (aim under ~250 words). Do real work in the directory when it helps. Do NOT use [DONE] on your
 opening turn before $Other has replied. Only once $Other has responded AND you both genuinely agree the
 GOAL is complete should you end a message with [DONE].
@@ -446,6 +448,20 @@ function Get-ToolsFromTurns {
     return @($used)
 }
 
+function Get-VerdictFromTurns {
+    # The REVIEW lock. An agent reviewing the other's work ends with a line:
+    #   VERDICT: PASS   |   VERDICT: PASS-with-locks   |   VERDICT: FAIL
+    # Without this the lock was documentation only: review_verdict was always empty.
+    param($Turns)
+    $verdict = ''
+    foreach ($t in $Turns) {
+        foreach ($m in [regex]::Matches([string]$t.reply, '(?im)^\s*verdict\s*:\s*(PASS[-\s]with[-\s]locks|PASS|FAIL)\b')) {
+            $verdict = ($m.Groups[1].Value -replace '\s', '-').ToUpper()
+        }
+    }
+    return $verdict
+}
+
 function ConvertTo-TranscriptMarkdown {
     param($Result)
     $sb = [System.Text.StringBuilder]::new()
@@ -521,6 +537,9 @@ function New-RunRecord {
         }
     }
 
+    # REVIEW lock: pick up a VERDICT line if either agent issued one.
+    if (-not $ReviewVerdict) { $ReviewVerdict = Get-VerdictFromTurns $Result.turns }
+
     $toolsMd = [System.Text.StringBuilder]::new()
     [void]$toolsMd.Append("# Tool ledger`n`n")
     $vStr = if (@($verifiedTools).Count) { @($verifiedTools) -join ', ' } else { '(none captured)' }
@@ -582,7 +601,6 @@ function New-RunRecord {
         pii_present    = [bool]$pii
         pii_reason     = $piiReason
         encoding       = 'utf-8'
-        commit         = $null
         orchestrator_version = $Result.orchestratorVersion
     }
     Write-Utf8NoBom (Join-Path $runDir 'manifest.json') ($manifest | ConvertTo-Json -Depth 8)
@@ -632,4 +650,4 @@ Export-ModuleMember -Function `
     Build-Convo, Build-Prompt, Invoke-ClaudeTurn, Invoke-CodexTurn, Test-CodexChannel, `
     Invoke-Orchestration, Add-SessionsIndex, Invoke-VaultCommit, `
     Test-PiiPath, Test-PiiContent, Test-NonEngagement, Get-ToolsFromText, Get-ToolsFromTurns, `
-    ConvertTo-TranscriptMarkdown, New-RunRecord, Add-RunIndexLine
+    Get-VerdictFromTurns, ConvertTo-TranscriptMarkdown, New-RunRecord, Add-RunIndexLine

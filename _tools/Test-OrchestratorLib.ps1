@@ -153,6 +153,18 @@ $r3 = Invoke-Orchestration -Task 'XXGOALXX' -WorkDir $tmp -Rounds 2 -ClaudeInvok
 Assert 'idle Claude is NOT labelled two-agent' ($r3.mode -ne 'two-agent')
 Assert 'idle Claude marks the run degraded'    ($r3.degraded -eq $true)
 
+Write-Host "`n[10] REVIEW lock: verdict is parsed, not decorative" -ForegroundColor Cyan
+$vt1 = @([pscustomobject]@{ reply = ("Checked against the brief." + [Environment]::NewLine + "VERDICT: PASS-with-locks") })
+$vt2 = @([pscustomobject]@{ reply = 'Solid work, no verdict line here.' })
+Assert 'parses PASS-with-locks'  ((Get-VerdictFromTurns $vt1) -eq 'PASS-WITH-LOCKS')
+Assert 'no verdict gives empty'  ((Get-VerdictFromTurns $vt2) -eq '')
+$rrV = New-RunRecord -Vault (Join-Path $tmp 'vaultV') -Result ([pscustomobject]@{
+    task='verdict run'; workDir=$tmp; roundsPlanned=1; roundsRun=1; twoAgent=$true; degraded=$false
+    mode='two-agent'; codexStatus='ok'; doneReason='t'; startedAt=(Get-Date).ToString('o'); endedAt=(Get-Date).ToString('o')
+    orchestratorVersion='2.0.0'; turns=$vt1 })
+$mfV = (Read-Utf8 (Join-Path $rrV.runDir 'manifest.json')) | ConvertFrom-Json
+Assert 'verdict lands in the manifest' ($mfV.review_verdict -eq 'PASS-WITH-LOCKS')
+
 Remove-Item -LiteralPath $tmp -Recurse -Force -ErrorAction SilentlyContinue
 
 Write-Host ""

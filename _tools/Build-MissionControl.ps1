@@ -21,8 +21,14 @@ Write-Host ("  " + $r.board)
 Write-Host ("  " + $r.daily)
 
 if ($Commit) {
+    # keep the _tools backup mirror in step with the running copy, so they cannot drift silently
+    $mirror = Join-Path $Vault '_tools'
+    if (Test-Path -LiteralPath $mirror) {
+        Copy-Item (Join-Path $PSScriptRoot '*.ps1')  $mirror -Force -ErrorAction SilentlyContinue
+        Copy-Item (Join-Path $PSScriptRoot '*.psm1') $mirror -Force -ErrorAction SilentlyContinue
+    }
     Start-Sleep -Seconds 2
-    Invoke-VaultCommit -Vault $Vault -Paths @('mission-control/BOARD.md','mission-control/DAILY.md') `
+    Invoke-VaultCommit -Vault $Vault -Paths @('mission-control/BOARD.md','mission-control/DAILY.md','_tools') `
         -Message ("mission-control: " + (Get-Date).ToString('yyyy-MM-dd HH:mm'))
     Write-Host "  committed + pushed" -ForegroundColor DarkGray
 }
