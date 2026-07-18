@@ -1,9 +1,10 @@
 # DAILY - Saturday, 2026-07-18
 
-_Mission Control morning digest. Generated 11:33._
+_Mission Control morning digest. Generated 13:33._
 
-## Runs (last 24h)  -  1
+## Runs (last 24h)  -  2
 
+- 13:33 - Read _reference/the-line.md and README.md in this working directory. Together, draft a one-screen QUICKSTART for the owner (Will): the 3 commands he will actually use day-to-day, each with a one-line "when to use it". Claude: draft it first. Codex: critique and tighten - cut anything that is not a daily action, and quote one specific line you would change and why. Converge on the final quickstart and include it verbatim in your final message. READ-ONLY - do not modify any files. End each message with a 'TOOLS-USED:' line listing what you actually used. When you both agree, end with [DONE].  -> runs/2026-07-18--133319--read-reference-the-line-md-and-readme-md/
 - 11:33 - CAPSTONE REVIEW of a newly built two-agent operating system (Claude Code + Codex). The working directory IS the shared vault. First READ README.md, _reference/the-line.md, and _reference/runrecord.md here to understand the system: The Line (CAPTURE->FRAME->PLAN->BUILD->REVIEW->SHIP->LEARN funnel with a Brief lock and a Review lock), Mission Control (committed Run Records + a morning DAILY.md), and the orchestrator (Codex health-check so runs are honestly two-agent/single-agent, draft-only rules, a PII gate). Then adversarially review it as two INDEPENDENT engines:
 - Claude: name the 3 biggest strengths, then the single highest-value follow-up.
 - Codex: independently pressure-test it - the top 2 risks or gaps that could bite Will later. Be specific and skeptical; do NOT just agree.
