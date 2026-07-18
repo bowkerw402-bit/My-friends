@@ -1,0 +1,58 @@
+{
+    "schema":  "runrecord/v1",
+    "run_id":  "2026-07-18--133319--read-reference-the-line-md-and-readme-md",
+    "slug":  "read-reference-the-line-md-and-readme-md",
+    "task":  "Read _reference/the-line.md and README.md in this working directory. Together, draft a one-screen QUICKSTART for the owner (Will): the 3 commands he will actually use day-to-day, each with a one-line \"when to use it\". Claude: draft it first. Codex: critique and tighten - cut anything that is not a daily action, and quote one specific line you would change and why. Converge on the final quickstart and include it verbatim in your final message. READ-ONLY - do not modify any files. End each message with a \u0027TOOLS-USED:\u0027 line listing what you actually used. When you both agree, end with [DONE].",
+    "station":  "BUILD",
+    "venture":  "",
+    "work_dir":  "C:\\Users\\bowke\\OneDrive\\Documents\\GitHub\\My-friends",
+    "started_at":  "2026-07-18T13:30:19.7512475+10:00",
+    "ended_at":  "2026-07-18T13:33:19.4262710+10:00",
+    "mode":  "two-agent",
+    "two_agent":  true,
+    "degraded":  false,
+    "rounds_planned":  3,
+    "rounds_run":  2,
+    "done_reason":  "[DONE] by Codex",
+    "agents":  [
+                   {
+                       "name":  "claude",
+                       "turns":  2,
+                       "statuses":  [
+                                        "ok"
+                                    ]
+                   },
+                   {
+                       "name":  "codex",
+                       "turns":  2,
+                       "statuses":  [
+                                        "ok"
+                                    ]
+                   }
+               ],
+    "codex_status":  "ok",
+    "tools_manifest":  [
+
+                       ],
+    "tools_verified":  [
+                           "Read",
+                           "Write",
+                           "Bash"
+                       ],
+    "tools_declared":  [
+                           "PowerShell `Get-Content`, `rg`",
+                           "PowerShell `Get-Content` [DONE]"
+                       ],
+    "outputs":  [
+
+                ],
+    "review_verdict":  "",
+    "ledger_touched":  [
+
+                       ],
+    "pii_present":  false,
+    "pii_reason":  "none",
+    "encoding":  "utf-8",
+    "commit":  null,
+    "orchestrator_version":  "2.0.0"
+}
