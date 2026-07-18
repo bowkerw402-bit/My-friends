@@ -10,11 +10,17 @@ brightdata, code-review, llm-council) · the vault + Mission Control · TradingV
 **Cannot right now:** Gmail (connector not authorized on Claude's side) → **handed to Codex** ·
 Monday.com (unauthorized — ignored for now) · anything tied to an account only Codex is logged into.
 
-## Codex — second engine + account-holder
-**Can:** independent adversarial review (real substrate diversity — it catches what Claude misses) ·
-parallel builds · GitHub via `github-local` MCP · TradingView MCP · media generation (muapi) ·
-**Gmail / outbound email** (its account has the access → see the outbound-email handoff).
-**Note:** Codex's config holds the GitHub token that needs rotating.
+## Codex, second engine and account holder
+**Can, in its own session or app:** independent adversarial review (real substrate diversity, it catches
+what Claude misses), parallel builds, GitHub via the `github-local` MCP, TradingView MCP, media generation
+(muapi), and **Gmail or outbound email**, because its account holds that access. See the outbound email handoff.
+
+**IMPORTANT, and easy to get wrong:** when Codex is called *inside an orchestrated run*, it is launched with
+`--ignore-user-config` for speed. That skips its plugins and MCP servers, so an orchestrated Codex turn has
+**filesystem and shell only, no Gmail, no GitHub MCP, no TradingView**. Account work must be done in Codex's
+own session, not through `orchestrate.ps1`. Do not write a handoff that assumes an orchestrated turn can send email.
+
+**Note:** Codex's config holds the GitHub token that still needs rotating.
 
 ## Will — the human gates (draft-only means these are always yours)
 Sending anything · deploying / domain changes · signing · spending / payments / Stripe · authorizing

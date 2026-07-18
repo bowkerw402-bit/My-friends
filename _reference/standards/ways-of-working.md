@@ -5,6 +5,21 @@ updated: 2026-07-18
 
 # Ways of working
 
+## Will shows, he does not describe (set 2026-07-19)
+**The rule:** when Will is working on anything visual or 3D, he wants to hand the agent the actual thing
+rather than write a paragraph describing it. Assume a picture or a file is coming, and build the channels
+that accept one. Never make him translate a shape into words.
+
+**Will's words:** "just the ability for me to show you exactly what and how i am prompting with 3d stuff,
+like so i can show u too instead of words."
+
+**How to do it properly:**
+- Pasted screenshots work directly in chat. This is the zero-setup path and should always be offered first.
+- For real geometry, `tools/visual-qa/look3d.mjs` renders any .glb .gltf .obj .stl .dae .fbx .ply from
+  several angles and reports triangle count, bounding box, and materials. The agent Reads the PNGs.
+- This is the 3D sibling of `snap.mjs`, which does the same job for web pages.
+- The point is mutual: Will shows the agent, and the agent shows Will back, in pictures both times.
+
 ## Real deliverables go on the Desktop (set 2026-07-18)
 **The rule:** if it is actual output Will needs to use, read, or show to someone, it goes on his Desktop in
 one clearly named folder. Not buried in the repo, not a loose local HTML file, and never three similar
