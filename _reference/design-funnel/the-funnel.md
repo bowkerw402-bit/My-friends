@@ -303,3 +303,85 @@ threshold (~0.85) and small radius (~0.24) so only genuine highlights bloom and 
 **Primitive landmarks read as cheap — scrap them.** A recognisable building made of boxes is worse
 than no building: it invites the comparison and loses. Silhouette geometry needs real segment counts
 (128×64, not 28×18) because an outline is unforgiving.
+
+---
+
+## 7. RESOLUTION, ANTI-ALIASING AND MATERIAL POLISH (2026-07-18)
+
+The "I can still see pixels" pass. Ordered by how much each actually bought.
+
+**`antialias: true` is INERT once EffectComposer is active.** The scene renders into a render target,
+never the MSAA-backed canvas, so every edge in the post chain aliases at 1:1. The fix is
+**supersampling** — render above display resolution and let the composer downsample. Real SSAA, and
+it works through bloom and grade both.
+
+**Supersampling must be a MULTIPLE of `devicePixelRatio`, never an absolute cap.** `min(max(dpr,1.6),2)`
+returns exactly 2 on a HiDPI display — i.e. native, supersampling nothing. Use `min(DPR * 1.5, 2.8)`
+on desktop, `min(DPR, 2)` on mobile. **And note the verification trap:** headless capture runs at
+`deviceScaleFactor: 1`, so a dpr-relative bug passes every screenshot. The check that finds it is
+comparing the canvas **drawing buffer** against its **CSS size**.
+
+**Add FXAA after the grade.** SSAA fixes area coverage but still steps on THIN high-contrast edges —
+a thin ring rim against bright sky, a hill silhouette. Its `resolution` uniform is in DEVICE pixels,
+so it must track pixelRatio on resize *and* after any adaptive quality change.
+
+**Anisotropic filtering is the fix for a shimmering water surface.** A normal map at a grazing angle
+is the textbook anisotropic case: long thin sample footprint, so trilinear filtering either aliases
+into crawling speckle or blurs to mush. `tex.anisotropy = renderer.capabilities.getMaxAnisotropy()`.
+**Ripple tiling and anisotropy are coupled** — finer tiling only works once anisotropy is in.
+
+**Guard the cost, but step DOWN partially.** Sample real frame times after the intro settles; if the
+machine can't hold it, reduce the ratio ~30% and never raise it again (oscillating resolution is more
+noticeable than either level). Give it a `?ss=` override that also bypasses the guard, or headless QA
+trips it and every quality snapshot silently lies.
+
+**Silhouette aliasing is better solved with ATMOSPHERE than with polygons.** Hard edges against a
+bright sky are the worst case; pulling fog in so far ridges dissolve is cheaper *and* more physically
+honest. More triangles would not have helped — the aliasing was at pixel level, not polygon level.
+
+**Flat single-colour materials are the loudest "painted cardboard" tell.** A greyscale `map`
+MULTIPLIES the material colour, so one mottle texture varies every landmass without touching any
+palette. Keep the range shallow (~0.66–1.0): terrain at distance has low local contrast.
+
+**Clearcoat is what reads as lacquered rather than merely shiny** — a second specular lobe over the
+metal. When you upgrade a material family, grep for the one surface that missed it.
+
+**Seed every procedural texture.** An unseeded one changes each load, destroying `?pose`
+reproducibility and any pixel baseline. One shared noise implementation, not one per consumer.
+
+---
+
+## 8. GETTING A BRAND FONT INTO 3D — `tools/ttf-to-typeface.mjs`
+
+`TextGeometry` needs three.js's own `typeface.json`. If you skip this you end up doing what this
+build did for eleven rounds: shipping the wordmark in whatever stock font was lying around
+(`gentilis_bold`) while every other element on the page used the real brand serif. Will's note was
+*"redesign the text it doesn't fit well"* — the mechanical cause was that it was **the only
+off-brand type on the page**.
+
+```bash
+npm i opentype.js
+node ttf-to-typeface.mjs <font.ttf> <out.typeface.json> [weight]
+```
+
+Get real TTFs from `raw.githubusercontent.com/google/fonts/main/ofl/<family>/`. **Do not** use the
+legacy-User-Agent trick against the Google Fonts CSS API — it returns **EOT**, which opentype.js
+rejects with "Unsupported OpenType signature".
+
+Two traps that produce silently-wrong output:
+
+1. **Use `glyph.path`, NOT `glyph.getPath()`.** `getPath()` returns RENDER coordinates — y-flipped
+   into screen space with the baseline offset applied — which yields upside-down glyphs. `glyph.path`
+   is the raw outline in font units, y-up, which is what the format stores.
+2. **The opcode order is not SVG order.** `m x y` · `l x y` · `q endX endY ctrlX ctrlY` ·
+   `b endX endY c1x c1y c2x c2y` — **end point first**, then controls. Emitting SVG order gives
+   scrambled glyphs with no error.
+
+Also: **opentype.js 2.0's `variation.set()` does not apply `gvar` deltas to outlines** (verified on a
+fresh parse — 400 and 700 come out byte-identical). So a variable font converts at its default
+master only. If you need a heavier weight, find a static instance; otherwise compensate for fine
+hairlines with a **smaller bevel**, not a heavier face.
+
+**Sanity-check before shipping:** compare a glyph against a known-good typeface.json. Coordinates
+should sit in the 0–1000 font-unit range with y increasing upward. If they cluster near zero or go
+negative where they should be positive, the coordinate source is wrong.
