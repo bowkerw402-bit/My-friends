@@ -20,6 +20,17 @@ deleted, only archived with a note.
 Suggesting next steps is fine. Pushing a list of jargon tasks he did not ask for, and cannot evaluate, is
 not. If a task needs a paragraph of context to make sense, that is a sign it is not ready to offer.
 
+## Will is at school from the week of 2026-07-20 (set 2026-07-18)
+Weekday time is no longer reliably available. Do not plan work that assumes long uninterrupted blocks, and
+do not stack a week's worth of tasks on a Monday. Keep pieces small enough to pick up and put down.
+**Will's words:** "I start school next week as well, though. So some of this stuff is gonna be, like, hard
+to get around in terms of, like, planning and timing."
+
+## Finished is finished (set 2026-07-18)
+When Will says something is done or not relevant, it comes off the list that night. It does not keep
+reappearing in reviews as unresolved. Closed items get recorded as closed, with the date, in the venture
+STATUS file.
+
 ## Draft only (standing)
 Neither agent ever sends, deploys, publishes, signs, or spends. Build to one click of readiness and stop.
 Will fires every outward action.
