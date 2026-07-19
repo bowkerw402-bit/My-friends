@@ -1,0 +1,60 @@
+{
+    "schema":  "runrecord/v1",
+    "run_id":  "2026-07-19--110855--bbs-website-hero-2d-concept-frames-for-a",
+    "slug":  "bbs-website-hero-2d-concept-frames-for-a",
+    "task":  "BBS website hero — 2D concept frames for a logo animation redesign.\n\nCONTEXT (locked facts, do not violate):\n- Brand: Bowker Business Services. Palette is FIXED: navy #061b3a, navy-2 #0a274d, navy-3 #102f57,\n  champagne #c9ae78, champagne-light #eadab6, ivory/bone background, pearl.\n- The mark is an interlocking \"LB\"/\"BB\" monogram. Its LETTERFORM IS LOCKED — public/monogram.png is\n  the logo-shape lock. Do NOT redesign the letterform. A hand-rebuilt version was rejected before\n  (\"needs to look like the photo\").\n- The redesign is of the TREATMENT and the ANIMATION, not the mark.\n\nTHE TARGET AESTHETIC (carried from an approved sister project):\nDark ground, a champagne/gold GLOW on the RIMS/EDGES of the monogram, highly reflective metal,\nsubtle sparkle, everything reading as expensive and restrained. The animation: blueprint guide lines\ndraw themselves on, the mark assembles/sweeps into place, the rims ignite, then it settles dead\nstill. Restrained, not flashy. Think luxury watch advert, not gaming intro.\n\nYOUR DELIVERABLE: standalone SVG concept frames (no build step, no dependencies) that show\nKEY FRAMES of this animation as static pictures. Write each as a separate .svg file in\ndesign/concepts/codex/ named 01-guides.svg, 02-assemble.svg, 03-rim-ignite.svg, 04-settle.svg.\nUse ONLY the palette hexes above. Use gradients/filters for the gold rim glow.\nRepresent the monogram as a simple placeholder geometric interlock — do NOT attempt to draw the real\nletterform, since it is locked and you do not have it.\n\nAlso write design/concepts/codex/NOTES.md: 5 bullet points on what you think makes the rim-glow read\nas expensive rather than cheap, and one risk you see in this direction.",
+    "station":  "BUILD",
+    "venture":  "",
+    "work_dir":  "C:\\Users\\bowke\\OneDrive\\Desktop\\CLAUDE\\CLAUDE OBSIDIAN\\Bowker Business Events",
+    "started_at":  "2026-07-19T10:54:58.3924433+10:00",
+    "ended_at":  "2026-07-19T11:08:55.9482740+10:00",
+    "mode":  "single-agent",
+    "outcome":  "incomplete",
+    "two_agent":  false,
+    "degraded":  true,
+    "rounds_planned":  1,
+    "rounds_run":  1,
+    "done_reason":  "rounds exhausted",
+    "agents":  [
+                   {
+                       "name":  "claude",
+                       "turns":  1,
+                       "statuses":  [
+                                        "ok"
+                                    ]
+                   },
+                   {
+                       "name":  "codex",
+                       "turns":  1,
+                       "statuses":  [
+                                        "timeout"
+                                    ]
+                   }
+               ],
+    "codex_status":  "timeout",
+    "tools_manifest":  [
+
+                       ],
+    "tools_verified":  [
+                           "Read",
+                           "Skill",
+                           "Bash",
+                           "Write",
+                           "Edit",
+                           "PowerShell"
+                       ],
+    "tools_declared":  [
+
+                       ],
+    "outputs":  [
+
+                ],
+    "review_verdict":  "",
+    "ledger_touched":  [
+
+                       ],
+    "pii_present":  false,
+    "pii_reason":  "none",
+    "encoding":  "utf-8",
+    "orchestrator_version":  "2.0.0"
+}
