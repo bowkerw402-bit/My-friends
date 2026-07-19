@@ -82,10 +82,11 @@ function Build-Prompt {
 You are $Name, one of two AI coding agents working as a team (the other is $Other).
 You share ONE goal and ONE working directory: $WorkDir
 
-HOUSE RULES (Will's standards, non-negotiable): read
-C:\Users\bowke\OneDrive\Documents\GitHub\My-friends\_reference\standards\ before writing anything.
-Above all: NEVER use em dashes, en dashes, or a hyphen as punctuation in any output. Use commas, full
-stops, colons or brackets instead. Write in plain language, no unexplained internal shorthand.
+HOUSE RULES (non-negotiable, and stated here so you never need to go and look them up):
+- NEVER use em dashes, en dashes, or a hyphen as punctuation. Use commas, full stops, colons or brackets.
+- Write in plain language. No internal shorthand without saying what it means.
+- Draft only. Never send, deploy, publish, sign or spend. Prepare it to one click and stop.
+- No client personal data (names, emails, phone numbers) in anything written to the shared vault.
 
 GOAL:
 $Task
@@ -158,43 +159,52 @@ function Invoke-CodexTurn {
         [Parameter(Mandatory=$true)][string]$WorkDir,
         [Parameter(Mandatory=$true)][string]$OutFile,
         [string]$Model = 'gpt-5.6-sol',
-        [string]$Effort = 'medium',   # medium so Codex engages deeply on real turns (preflight probe stays 'low')
-        [int]$TimeoutSec = 180
+        [string]$Effort = 'medium',   # medium so Codex engages properly (the preflight probe stays 'low')
+        [int]$TimeoutSec = 240,
+        [switch]$NoRetry
     )
-    Remove-Item -LiteralPath $OutFile -ErrorAction SilentlyContinue
     # CRITICAL: cmd.exe (codex.cmd) truncates a command-line argument at the first newline, so a
     # multi-line prompt reached Codex as only its first line - the real cause of shallow replies.
     # Write the full prompt to a UTF-8 sidecar file and pass Codex a short one-line pointer instead.
     $promptFile = [System.IO.Path]::ChangeExtension($OutFile, 'prompt.txt')
     [System.IO.File]::WriteAllText($promptFile, $Prompt, [System.Text.UTF8Encoding]::new($false))
     $argPrompt = "Read the UTF-8 text file at the exact path below and follow its ENTIRE contents as your instructions, responding directly to them. Do not summarise or describe the file - act on it. Output only your response. PATH: $promptFile"
-    # --ignore-user-config is load-bearing: it skips ~25 plugins + MCP servers (one with a
-    # 120s startup) that otherwise boot on EVERY turn. We re-supply just the model.
-    $job = Start-Job -ScriptBlock {
-        param($exe, $argPrompt, $wd, $of, $model, $effort)
-        & $exe exec --ignore-user-config -c "model=$model" -c "model_reasoning_effort=$effort" `
-            --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check -C $wd -o $of $argPrompt 2>$null | Out-Null
-        return $LASTEXITCODE
-    } -ArgumentList $CodexExe, $argPrompt, $WorkDir, $OutFile, $Model, $Effort
 
-    $finished = Wait-Job $job -Timeout $TimeoutSec
-    $timedOut = $false
-    $exit     = $null
-    if (-not $finished) {
-        $timedOut = $true
-        Stop-Job $job -ErrorAction SilentlyContinue
-    } else {
-        $exit = Receive-Job $job
-        if ($exit -is [array]) { $exit = $exit[-1] }
+    # one attempt at a given effort and time budget
+    $attempt = {
+        param($eff, $tmo)
+        Remove-Item -LiteralPath $OutFile -ErrorAction SilentlyContinue
+        # --ignore-user-config is load-bearing: it skips ~25 plugins + MCP servers (one with a
+        # 120s startup) that would otherwise boot on EVERY turn. We re-supply just the model.
+        $job = Start-Job -ScriptBlock {
+            param($exe, $ap, $wd, $of, $model, $effort)
+            & $exe exec --ignore-user-config -c "model=$model" -c "model_reasoning_effort=$effort" `
+                --dangerously-bypass-approvals-and-sandbox --skip-git-repo-check -C $wd -o $of $ap 2>$null | Out-Null
+            return $LASTEXITCODE
+        } -ArgumentList $CodexExe, $argPrompt, $WorkDir, $OutFile, $Model, $eff
+        $finished = Wait-Job $job -Timeout $tmo
+        $timedOut = $false
+        $exit     = $null
+        if (-not $finished) { $timedOut = $true; Stop-Job $job -ErrorAction SilentlyContinue }
+        else { $exit = Receive-Job $job; if ($exit -is [array]) { $exit = $exit[-1] } }
+        Remove-Job $job -Force -ErrorAction SilentlyContinue
+        $text = ''
+        if (Test-Path -LiteralPath $OutFile) { $text = (Read-Utf8 $OutFile).Trim() }
+        return [pscustomobject]@{
+            text = $text; exitCode = $exit; timedOut = $timedOut; effort = $eff
+            ok = ((-not $timedOut) -and ($exit -eq 0) -and ($text.Length -gt 0))
+        }
     }
-    Remove-Job $job -Force -ErrorAction SilentlyContinue
 
-    $text = ''
-    if (Test-Path -LiteralPath $OutFile) { $text = (Read-Utf8 $OutFile).Trim() }
-    return [pscustomobject]@{
-        text = $text; exitCode = $exit; timedOut = $timedOut
-        ok = ((-not $timedOut) -and ($exit -eq 0) -and ($text.Length -gt 0))
+    $r = & $attempt $Effort $TimeoutSec
+    # A timeout at normal effort is usually the reasoning budget, not a dead channel. Retry once
+    # leaner so the turn degrades to a shorter answer instead of vanishing entirely.
+    if ($r.timedOut -and (-not $NoRetry) -and ($Effort -ne 'low')) {
+        Write-Host ("  Codex timed out at effort=" + $Effort + ", retrying once at low effort...") -ForegroundColor Yellow
+        $r = & $attempt 'low' ([Math]::Max(120, [int]($TimeoutSec / 2)))
+        if ($r.ok) { $r | Add-Member -NotePropertyName retried -NotePropertyValue $true -Force }
     }
+    return $r
 }
 
 function Test-NonEngagement {
