@@ -18,6 +18,7 @@ to consistently."*
 | **[the-funnel.md](the-funnel.md)** | The pipeline: spec → build → verify → gate → close the loop. The craft playbook (realism, grade, materials, motion). | Before you write any scene code. |
 | **[calibration.md](calibration.md)** | Will's taste, **measured** from work he already approved. Chroma bands, ground lightness, where gold is allowed. | Before you pick any colour. Non-negotiable. |
 | **[case-study-lake-hero.md](case-study-lake-hero.md)** | All 12 documented rounds of the lake build: what he said, what I did, what the real cause turned out to be. | When something looks wrong and you're about to guess. |
+| **[case-study-bbs-hero-and-prism.md](case-study-bbs-hero-and-prism.md)** | The BBS sequel: contrast measured, scaling a DOM figure with `cqw`, the triangular-prism apothem, and three tests that accused correct code. | Scaling/rotating DOM rather than WebGL, or when a test fails on something that looks fine. |
 | **[tools.md](tools.md)** | The QA tools and the exact commands. | Every build. |
 | **`tools/predeliver.mjs`** | The show/no-show gate. Blocks on drift vs the last approved build. | **Before Will sees anything.** |
 | **[../council/2026-07-19-retries-to-three.md](../council/2026-07-19-retries-to-three.md)** | Why 14 rounds happened and what makes the next one 3. | Before starting a project. |
@@ -45,6 +46,9 @@ him something — the rest were the builder debugging in public, which is what h
    `filmstrip.mjs` tiles the whole arc into one image. Every real fix came from reading one.
 5. **Two failed fixes on the same symptom means the diagnosis is wrong.** Stop fixing. Go find the
    frame that discriminates between your hypotheses.
+6. **When a test fails on something your eyes say is fine, suspect the observation first** — the
+   window (long enough to see the event?), the selector (right element?), the units (is it even a
+   number?). Three for three on the BBS build.
 
 ---
 

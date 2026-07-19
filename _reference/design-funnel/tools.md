@@ -151,6 +151,29 @@ Verify the test before doubting the code.
 
 ---
 
+## carousel-behaviour.mjs — the three things a carousel must do
+
+```bash
+node carousel-behaviour.mjs      # points at the route inside the file
+```
+
+Will's contract: *"Autoplay carousels are explicitly LIKED — never flag their existence, only verify
+they work (advance, loop cleanly, pause on hover/touch)."* This asserts exactly that, plus reduced
+motion and viewport fit, plus (for the BBS prism) the apothem ratio that makes three faces meet as a
+solid rather than drift apart as cards.
+
+**It is also the best worked example of a test accusing correct code** — three false failures in one
+build, each with the fix recorded inline: sample LONGER than one full period, assert only the FRONT
+item fits (side seats are meant to swing off-frame), and never `parseFloat` a custom property
+(`getPropertyValue('--r')` returns the raw `calc()` token, not pixels — read the applied transform
+matrix instead).
+
+When the component under test drops the pause (Will did), invert the assertion rather than deleting
+it: *nothing may stop it* is a more valuable guarantee than *hover stops it*, because a stray
+`:hover` rule silently freezing the page is the realistic regression.
+
+---
+
 ## runner.mjs — the mechanical gate
 
 ```bash
