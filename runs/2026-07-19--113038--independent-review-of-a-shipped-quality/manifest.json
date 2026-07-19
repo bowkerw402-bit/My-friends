@@ -1,0 +1,55 @@
+{
+    "schema":  "runrecord/v1",
+    "run_id":  "2026-07-19--113038--independent-review-of-a-shipped-quality",
+    "slug":  "independent-review-of-a-shipped-quality",
+    "task":  "Independent review of a shipped-quality WebGL hero implementation. Be critical and specific.\n\nFILE TO REVIEW: app/MonogramV2.tsx (and app/hero-v2/page.tsx) in this repo.\nIt renders the LOCKED Meshy monogram GLB with a redesigned treatment: navy metal\n(MeshPhysicalMaterial metalness .95 / roughness .17 / clearcoat .9), a Fresnel RIM glow in\nchampagne injected via onBeforeCompile AFTER \u003ctonemapping_fragment\u003e, drei Sparkles, a studio\nEnvironment of Lightformers, ContactShadows, on a dark navy ground with SVG blueprint guides.\n\nCONSTRAINTS THAT ARE NOT UP FOR DEBATE:\n- The letterform is LOCKED (public/monogram.png is the shape lock). Do not propose redesigning it.\n- Palette is fixed: navy #061b3a, champagne #c9ae78, champagne-light #eadab6.\n- Will approved this dark-ground direction. Do not propose switching to a light/cream ground.\n\nWHAT I WANT FROM YOU — FINISH QUALITY ONLY. Answer these four, concretely:\n1. Read the Fresnel injection. Is `vNormal` correct there, or should it be the perturbed normal?\n   Does injecting after tonemapping cause any problem I have not accounted for (e.g. with\n   outputColorSpace / sRGB encoding in three 0.185)?\n2. The monogram has tight interlocking overlaps. A Fresnel rim keyed on view angle will pile up\n   champagne in those crevices. Is that visible risk real, and what is the cheapest mitigation that\n   does NOT require editing the locked geometry?\n3. Large coplanar extruded faces share one normal and render as flat fills. I added a micro-relief\n   normal map but had to dial it to sub-visible (0.16) because it read as dirt. Is there a better\n   technique for this specific case?\n4. Name the single biggest thing that would make this read as MORE expensive, that I have not done.\n\nBe blunt. Do not restate my own reasoning back to me. If something I did is wrong, say so.",
+    "station":  "BUILD",
+    "venture":  "",
+    "work_dir":  "C:\\Users\\bowke\\OneDrive\\Desktop\\CLAUDE\\CLAUDE OBSIDIAN\\Bowker Business Events",
+    "started_at":  "2026-07-19T11:25:00.1880321+10:00",
+    "ended_at":  "2026-07-19T11:30:38.8173555+10:00",
+    "mode":  "two-agent",
+    "outcome":  "incomplete",
+    "two_agent":  true,
+    "degraded":  false,
+    "rounds_planned":  1,
+    "rounds_run":  1,
+    "done_reason":  "rounds exhausted",
+    "agents":  [
+                   {
+                       "name":  "claude",
+                       "turns":  1,
+                       "statuses":  [
+                                        "ok"
+                                    ]
+                   },
+                   {
+                       "name":  "codex",
+                       "turns":  1,
+                       "statuses":  [
+                                        "ok"
+                                    ]
+                   }
+               ],
+    "codex_status":  "ok",
+    "tools_manifest":  [
+
+                       ],
+    "tools_verified":  [
+                           "Read"
+                       ],
+    "tools_declared":  [
+                           "Read, Shell, Ripgrep"
+                       ],
+    "outputs":  [
+
+                ],
+    "review_verdict":  "FAIL",
+    "ledger_touched":  [
+
+                       ],
+    "pii_present":  false,
+    "pii_reason":  "none",
+    "encoding":  "utf-8",
+    "orchestrator_version":  "2.0.0"
+}
