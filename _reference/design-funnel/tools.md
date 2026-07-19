@@ -123,9 +123,31 @@ resizing.
 
 It exists because **every other tool here renders at ONE fixed viewport and never resizes or
 scrolls**, so defects living in the TRANSITIONS between configurations are structurally invisible to
-the whole harness. Known gap: there is still no equivalent for a mid-run adaptive-quality step,
-because it cannot be triggered headlessly (software rasterisation runs ~1fps, so a 90-frame window
-takes 90 seconds).
+the whole harness.
+
+---
+
+## guardtest.mjs — proves an adaptive quality step cannot show a black frame
+
+```bash
+node guardtest.mjs
+```
+
+The black cut came from `renderer.setPixelRatio()` writing `canvas.width` — which per the HTML spec
+CLEARS the drawing buffer — in a callback that ran AFTER `draw()` in the same frame. With
+`alpha:false` a cleared buffer composites as opaque black. The cure is to apply the change at the
+TOP of the next frame; this asserts that ordering **at runtime** rather than trusting a code read.
+
+Asserts: the guard fires · every change applies inside `tick()` · **`appliedAfterDraw === 0`** ·
+the ratio only steps down · it never goes below 1.0 · no page errors.
+
+Requires two hooks in the page: `?guardwin=<n>` to shrink the 90-frame decision window (otherwise
+untestable headlessly — software rasterisation runs ~1fps, so one decision takes 90 seconds), and a
+tiny `window.__qa` counter object.
+
+**Test-authoring note:** the first run failed with "guard never fired", and the bug was in the TEST
+— it passed `?ss=`, which the guard deliberately treats as a manual override and bypasses itself.
+Verify the test before doubting the code.
 
 ---
 

@@ -555,7 +555,15 @@ invisible to all of them, no matter how many checks are added.
 > between configurations need a test that performs the transition.
 
 `tools/resizetest.mjs` does this for resize (assert spurious events change nothing, then assert a
-real resize still works — both directions, or you have only proven you broke resizing). **There is
-still no equivalent test for a mid-run quality step, because it cannot be triggered headlessly:
-software rasterisation runs at ~1fps, so the guard's 90-frame window takes 90 seconds.** That gap is
-open and known.
+real resize still works — both directions, or you have only proven you broke resizing).
+
+**The mid-run quality step is now covered too** (`tools/guardtest.mjs`). It looked untestable —
+software rasterisation runs ~1fps and the guard needs 90 frames, i.e. 90 seconds per decision — but
+"untestable headlessly" was really "the page exposes no seam". Two small additions fixed that:
+a `?guardwin=<n>` param to shrink the decision window, and a `window.__qa` counter recording
+**how many changes applied after a draw** — the precise black-cut condition, which the test asserts
+is zero.
+
+> **"Can't be tested" is usually "there's no hook for it yet."** Adding a determinism hook is
+> cheaper than carrying an untested fix, and it converts a claim you are trusting into a claim you
+> are checking.
