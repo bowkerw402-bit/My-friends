@@ -1,6 +1,6 @@
 # Case study — the APLakeside lake hero
 
-Six rounds, 2026-07-18. The brief: a 3D lake, a boat that follows the cursor, the logo disassembled
+Twelve documented rounds across 2026-07-18/19 (14 checkpoints in total). The brief: a 3D lake, a boat that follows the cursor, the logo disassembled
 into spinning rings, live coordinates, a slow camera descent, scroll-dissolve into the site.
 
 This is the troubleshooting record. Each round: what he said, what I did, **what the cause actually

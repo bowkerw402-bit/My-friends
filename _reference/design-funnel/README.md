@@ -17,7 +17,7 @@ to consistently."*
 |---|---|---|
 | **[the-funnel.md](the-funnel.md)** | The pipeline: spec → build → verify → gate → close the loop. The craft playbook (realism, grade, materials, motion). | Before you write any scene code. |
 | **[calibration.md](calibration.md)** | Will's taste, **measured** from work he already approved. Chroma bands, ground lightness, where gold is allowed. | Before you pick any colour. Non-negotiable. |
-| **[case-study-lake-hero.md](case-study-lake-hero.md)** | All six rounds of the lake build: what he said, what I did, what the real cause was. | When something looks wrong and you're about to guess. |
+| **[case-study-lake-hero.md](case-study-lake-hero.md)** | All 12 documented rounds of the lake build: what he said, what I did, what the real cause turned out to be. | When something looks wrong and you're about to guess. |
 | **[tools.md](tools.md)** | The QA tools and the exact commands. | Every build. |
 | **`tools/predeliver.mjs`** | The show/no-show gate. Blocks on drift vs the last approved build. | **Before Will sees anything.** |
 | **[../council/2026-07-19-retries-to-three.md](../council/2026-07-19-retries-to-three.md)** | Why 14 rounds happened and what makes the next one 3. | Before starting a project. |

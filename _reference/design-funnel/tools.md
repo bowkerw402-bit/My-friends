@@ -3,8 +3,8 @@
 Canonical location: `C:\Users\bowke\OneDrive\Desktop\CLAUDE\tools\`
 (**not** in this repo — that folder is not under git. See "Drift warning" at the bottom.)
 
-Copies of the two small self-contained ones live in `./tools/` here so the method survives even if
-that folder doesn't.
+Six self-contained tools are copied into `./tools/` here so the method survives even if that
+folder doesn't. The heavier ones (runner, design-bench) stay canonical at the path above.
 
 ---
 
