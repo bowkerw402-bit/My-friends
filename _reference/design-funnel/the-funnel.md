@@ -482,54 +482,80 @@ is therefore to measure on the USER'S machine and back off — which is what the
 
 ---
 
-## 11. THE BLACK-CUT BUG — and the blind spot in the whole QA harness
+## 11. THE BLACK-CUT BUG — and how I got it wrong first
 
-Symptom: *"random black cuts and could be smoother"* on a WebGL hero.
+Symptom: *"random black cuts and could be smoother"* on a WebGL hero, appearing right after an
+adaptive-quality guard was added.
 
-Cause: **an unguarded resize handler tearing down the entire post-processing chain.**
+### My first diagnosis was WRONG — recorded because the error is instructive
+
+I found an unguarded `addEventListener('resize', frame)` where `frame()` called
+`composer.setSize()`, reasoned that browsers fire `resize` on scroll, concluded that scrolling was
+reallocating the whole post chain, shipped a no-op guard, and wrote it up here as the cause. It was
+plausible, it was specific, and it was **not the bug**.
+
+A parallel investigation reading the actual library source falsified it:
+
+- `EffectComposer` caches its OWN `_pixelRatio` at construction and multiplies every target size by
+  it. It is assigned only in the constructor, `reset()` and `setPixelRatio()`.
+- The page never called `composer.setPixelRatio()`. So `composer.setSize(innerWidth, innerHeight)`
+  passed **identical effective dimensions every time**, and r128's `WebGLRenderTarget.setSize` is
+  equality-guarded — `dispose()` never ran. **Nothing was ever reallocated.**
+
+> **Reading the library source beats reasoning about the library's behaviour.** "setSize must
+> reallocate" is a reasonable assumption and it was false. I verified the three load-bearing claims
+> myself before accepting the correction — do that, in both directions.
+
+### The actual mechanism
+
+1. `renderer.setPixelRatio()` writes `canvas.width`/`canvas.height`. Per the HTML spec, **writing
+   canvas.width RESETS the drawing buffer to its cleared state.**
+2. The renderer was created without an `alpha` key, so `alpha` defaults to **false**, and a cleared
+   buffer composites as **OPAQUE BLACK** — not transparent.
+3. The guard's rAF callback re-registered at the TOP of its loop, so it ran **after** `tick()`'s
+   `draw()` in the same animation frame. It wiped the canvas that had just been rendered, and the
+   browser composited the black.
+
+> **Never resize a WebGL canvas after you have drawn into it.** Apply any pixel-ratio change at the
+> TOP of the frame, before drawing — never in a callback that lands after it.
+
+4. And it repeated: because `composer._pixelRatio` stayed stale, the step-down did not actually
+   reduce the scene/bloom/grade cost, so the frame time never improved, the measurement window
+   restarted, and the guard ground through all three steps — three black cuts, about two seconds
+   apart.
+
+### The trap in the obvious patch
+
+Re-rendering immediately after the resize *does* close the black-frame window — but if you do it in
+the guard callback, that frame now performs **two complete renders** (scene + bloom pyramid + grade
++ FXAA, twice). On a machine already over 20ms that is a >40ms frame. **You have traded a black
+flash for a visible hitch.** Deferring the change to the top of the next frame costs nothing.
 
 ```js
-addEventListener('resize', frame);          // unguarded
-function frame(){
-  renderer.setSize(w, h, false);
-  if (composer) composer.setSize(w, h);     // DISPOSES + REALLOCATES every render target
-  sizeFxaa();                               // scene target, bloom's whole mip pyramid, grade, FXAA
+// guard: request only
+step++; SS = Math.max(1, SS * 0.8); pendingSS = SS; times.length = 0;
+
+// tick(): apply BEFORE drawing
+if (pendingSS){
+  renderer.setPixelRatio(pendingSS);
+  if (composer) composer.setPixelRatio(pendingSS);   // NOT setSize — the ratio is what is stale
+  pendingSS = 0;
 }
 ```
 
-**Browsers fire `resize` on SCROLL** — scrollbars appearing/disappearing, mobile URL-bar show/hide.
-A page with scroll listeners and a scroll-driven layout change can therefore rebuild its entire post
-chain repeatedly while the user simply scrolls, presenting blank frames each time.
+Floor the ratio at 1: below that the canvas is under one device pixel per CSS pixel.
 
-```js
-var _fw = 0, _fh = 0, _fss = 0;
-function frame(){
-  var w = innerWidth, h = innerHeight;
-  if (w === _fw && h === _fh && SS === _fss) return;   // no-op resize: do NOT reallocate
-  _fw = w; _fh = h; _fss = SS;
-  ...
-}
-```
+### The blind spot that let it live
 
-Two follow-ons that are easy to miss:
-- **Never present a freshly-cleared buffer.** Anything that reallocates targets mid-run (an adaptive
-  quality step) should `render()` immediately afterwards, so the cleared targets are filled before
-  the next frame is shown.
-- **Invalidate the cache you just added.** If an adaptive step changes the pixel ratio, it must
-  update the tracked width/height/ratio too — otherwise the next genuine resize is wrongly skipped
-  as a no-op. Adding a cache without invalidation is its own classic bug.
+**Every tool in the harness renders at ONE fixed viewport and never resizes or scrolls.** A defect
+that only manifests on resize, scroll, orientation change or a mid-run quality step is structurally
+invisible to all of them, no matter how many checks are added.
 
-### The blind spot worth remembering
+> Headless capture exercises a page in exactly one configuration. Defects living in the TRANSITIONS
+> between configurations need a test that performs the transition.
 
-**This defect was structurally invisible to the entire QA harness.** Every tool — snap, filmstrip,
-the gate, predeliver — renders at ONE fixed viewport and never resizes and never scrolls. A bug that
-only manifests *on resize or scroll* cannot be caught by any of them, no matter how many checks are
-added.
-
-> Headless capture exercises a page in exactly one configuration. Defects that live in the
-> TRANSITIONS between configurations — resize, scroll, orientation change, tab restore, DPR change on
-> monitor switch — require a test that actually performs the transition.
-
-The test is cheap and belongs in the harness: fire N spurious resize events, assert the drawing
-buffer does NOT change; then perform a real resize and assert that it DOES. Both directions, or you
-have only proven you broke resizing.
+`tools/resizetest.mjs` does this for resize (assert spurious events change nothing, then assert a
+real resize still works — both directions, or you have only proven you broke resizing). **There is
+still no equivalent test for a mid-run quality step, because it cannot be triggered headlessly:
+software rasterisation runs at ~1fps, so the guard's 90-frame window takes 90 seconds.** That gap is
+open and known.
