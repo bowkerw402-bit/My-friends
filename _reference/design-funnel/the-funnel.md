@@ -435,3 +435,46 @@ discriminating frame: make the experiment answer a binary question rather than a
 
 **Verify the property landed, don't assume the edit did.** One material silently never received the
 normal map because a string anchor didn't match. `grep` for the applied property afterwards.
+
+
+---
+
+## 10. PERFORMANCE — budget pixels, never ratios
+
+The same `devicePixelRatio` blind spot produced two different bugs in this project: first a quality
+fix that was a **no-op** on HiDPI (v3.7), then a framerate collapse **caused** by HiDPI (v4.2).
+
+> **Never express a rendering cost as a ratio. Express it as a pixel budget.**
+
+A ratio multiplies with BOTH window size and DPR, so `DPR * 1.5` quietly became 10–16 megapixels per
+frame on a HiDPI laptop — 44–70 MP across four post passes — while the case actually measured
+(dpr 1) was 2.3 MP. Roughly 7x the tested load, invisible to every check.
+
+```js
+var MAX_MAIN_PIXELS = 5.5e6;
+var target = (DPR >= 1.75) ? DPR : DPR * 1.6;   // see below
+var budget = Math.sqrt(MAX_MAIN_PIXELS / (innerWidth * innerHeight));
+var SS = Math.max(1, Math.min(target, budget, 2.0));
+```
+
+**Supersampling is for LOW-DPI displays.** At dpr ≥ 1.75 the panel already oversamples; target native
+and spend nothing extra. At dpr 1 an aliased edge is genuinely visible, so ~1.6x earns its cost. Code
+that scales supersampling UP with DPR spends most on the displays that need it least — exactly
+backwards.
+
+**Know your recurring costs.** In a water scene the planar reflection **re-renders the entire scene
+every frame** — after the main buffer it is the single largest recurring cost, and its resolution is
+usually the cheapest big win. Shadow map size is the other: tightening the shadow camera raises texel
+density faster than growing the map, so do that FIRST and you may not need the bigger map at all.
+
+**Smoothness ≠ framerate.** Periodic hitching usually means per-frame allocation feeding the GC, not
+a low average. Hoist scratch vectors out of the render loop.
+
+**Adaptive quality must be continuous and multi-step.** A guard that samples once and steps once
+leaves the page slow forever if one step wasn't enough. Rolling median over ~90 frames, up to 3
+steps, and strictly one-way — resolution that oscillates is more noticeable than resolution that is
+simply lower.
+
+**You cannot measure GPU performance headlessly.** Software rasterisation reports ~1fps regardless,
+so absolute numbers are meaningless and only ratios between two runs mean anything. The honest design
+is therefore to measure on the USER'S machine and back off — which is what the guard is for.
