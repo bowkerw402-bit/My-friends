@@ -478,3 +478,58 @@ simply lower.
 **You cannot measure GPU performance headlessly.** Software rasterisation reports ~1fps regardless,
 so absolute numbers are meaningless and only ratios between two runs mean anything. The honest design
 is therefore to measure on the USER'S machine and back off — which is what the guard is for.
+
+
+---
+
+## 11. THE BLACK-CUT BUG — and the blind spot in the whole QA harness
+
+Symptom: *"random black cuts and could be smoother"* on a WebGL hero.
+
+Cause: **an unguarded resize handler tearing down the entire post-processing chain.**
+
+```js
+addEventListener('resize', frame);          // unguarded
+function frame(){
+  renderer.setSize(w, h, false);
+  if (composer) composer.setSize(w, h);     // DISPOSES + REALLOCATES every render target
+  sizeFxaa();                               // scene target, bloom's whole mip pyramid, grade, FXAA
+}
+```
+
+**Browsers fire `resize` on SCROLL** — scrollbars appearing/disappearing, mobile URL-bar show/hide.
+A page with scroll listeners and a scroll-driven layout change can therefore rebuild its entire post
+chain repeatedly while the user simply scrolls, presenting blank frames each time.
+
+```js
+var _fw = 0, _fh = 0, _fss = 0;
+function frame(){
+  var w = innerWidth, h = innerHeight;
+  if (w === _fw && h === _fh && SS === _fss) return;   // no-op resize: do NOT reallocate
+  _fw = w; _fh = h; _fss = SS;
+  ...
+}
+```
+
+Two follow-ons that are easy to miss:
+- **Never present a freshly-cleared buffer.** Anything that reallocates targets mid-run (an adaptive
+  quality step) should `render()` immediately afterwards, so the cleared targets are filled before
+  the next frame is shown.
+- **Invalidate the cache you just added.** If an adaptive step changes the pixel ratio, it must
+  update the tracked width/height/ratio too — otherwise the next genuine resize is wrongly skipped
+  as a no-op. Adding a cache without invalidation is its own classic bug.
+
+### The blind spot worth remembering
+
+**This defect was structurally invisible to the entire QA harness.** Every tool — snap, filmstrip,
+the gate, predeliver — renders at ONE fixed viewport and never resizes and never scrolls. A bug that
+only manifests *on resize or scroll* cannot be caught by any of them, no matter how many checks are
+added.
+
+> Headless capture exercises a page in exactly one configuration. Defects that live in the
+> TRANSITIONS between configurations — resize, scroll, orientation change, tab restore, DPR change on
+> monitor switch — require a test that actually performs the transition.
+
+The test is cheap and belongs in the harness: fire N spurious resize events, assert the drawing
+buffer does NOT change; then perform a real resize and assert that it DOES. Both directions, or you
+have only proven you broke resizing.
