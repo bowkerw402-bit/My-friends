@@ -74,6 +74,61 @@ between two runs is informative.
 
 ---
 
+## predeliver.mjs — THE SHOW / NO-SHOW GATE (run this before Will sees anything)
+
+**The rule: you do not show Will a build until this exits 0.**
+
+```bash
+node predeliver.mjs <url> --brand=aplakeside      --ref="<url of the last APPROVED checkpoint>"
+```
+
+Why it exists, from the council on why the lake build took 14 rounds: a 1088-line playbook and a
+calibration file both existed by 20:03, and five more rounds shipped after them without either being
+opened. **A document that CAN be skipped IS skipped.** And the old QA gate carried zero information —
+it returned the same verdict on the build Will approved on sight and on the builds he rejected,
+including a check named `taste` that passed on every rejected build.
+
+So this is a different KIND of object: it is **on-path** (it stands between the build and delivery),
+its expected values are **read out of files Will already approved** (the builder does not author the
+pass condition), and it has **no advisory verdict** for what it measures.
+
+What it checks, and which past round each one would have caught:
+
+| check | catches |
+|---|---|
+| `resolution` | v3.7 — a "quality fix" that was a total no-op on HiDPI and passed every headless check |
+| `brand-typeface` | v4.0 — the hero wordmark was the only off-brand type on the page, true since round 1 |
+| `accent-consistency` | two golds in one frame at different chroma reading as two different golds |
+| `ground-lightness` | washed-out frames — his house ground is L .20–.27 across three brands |
+| `flat-region` | v4.1 — extruded type rendering as single flat colours (plastic) |
+| `drift-vs-approved` | **the important one.** v3.4 — the gold cascade, caught at v3.1 instead of v3.4 |
+
+**`accent-chroma` is deliberately ADVISORY, and that matters.** The band in `feel.json` was measured
+from approved SOURCE TOKENS and does not transfer to rendered PIXELS. Proof: v1 — the build Will
+approved on sight — renders its gold at median chroma 0.054, far below the source band. An absolute
+pixel band would have BLOCKED the most-approved artifact in the project. Blocking on drift versus an
+approved reference is the honest version.
+
+---
+
+## resizetest.mjs — the transition test
+
+```bash
+node resizetest.mjs
+```
+
+Fires 25 spurious resize events and asserts the drawing buffer does **not** change, then performs a
+real resize and asserts it **does**. Both directions — otherwise you have only proven you broke
+resizing.
+
+It exists because **every other tool here renders at ONE fixed viewport and never resizes or
+scrolls**, so defects living in the TRANSITIONS between configurations are structurally invisible to
+the whole harness. Known gap: there is still no equivalent for a mid-run adaptive-quality step,
+because it cannot be triggered headlessly (software rasterisation runs ~1fps, so a 90-frame window
+takes 90 seconds).
+
+---
+
 ## runner.mjs — the mechanical gate
 
 ```bash

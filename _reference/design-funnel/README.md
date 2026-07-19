@@ -19,8 +19,17 @@ to consistently."*
 | **[calibration.md](calibration.md)** | Will's taste, **measured** from work he already approved. Chroma bands, ground lightness, where gold is allowed. | Before you pick any colour. Non-negotiable. |
 | **[case-study-lake-hero.md](case-study-lake-hero.md)** | All six rounds of the lake build: what he said, what I did, what the real cause was. | When something looks wrong and you're about to guess. |
 | **[tools.md](tools.md)** | The QA tools and the exact commands. | Every build. |
+| **`tools/predeliver.mjs`** | The show/no-show gate. Blocks on drift vs the last approved build. | **Before Will sees anything.** |
+| **[../council/2026-07-19-retries-to-three.md](../council/2026-07-19-retries-to-three.md)** | Why 14 rounds happened and what makes the next one 3. | Before starting a project. |
 
 ---
+
+## The rule that supersedes everything below
+
+**Count SHOWINGS, not rounds.** Unlimited internal iteration; three contacts with Will. Of the 13
+post-v1 rounds, only ~4 transferred information that could not have been obtained without showing
+him something — the rest were the builder debugging in public, which is what he was objecting to
+("yo slow down cause it looks kinda shit"). **Run `predeliver.mjs` before every showing.**
 
 ## The five-line version
 
