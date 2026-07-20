@@ -39,15 +39,25 @@ not the posting mechanism. All scheduling happens from the signed-in Chrome on t
 
 ## Phone map
 
-| Phone | Brand | Platforms (in priority order) |
-|---|---|---|
-| 1 | Bowker Business Services (storefront: automation lanes + desk catalogue) | Facebook page, Instagram, LinkedIn, Google Business Profile |
-| 2 | Evidence / NDIS Audit Desk | LinkedIn, Facebook (gated: needs Will's call on whether it posts as BBS or as its own name) |
-| 3 | APLakeside | Instagram, TikTok, Facebook |
-| 4 | Trading tools (TV Honest Tools) | HELD. Only if that venture ignites. Education only, never signals (AFSL boundary). |
-| 5 | Production rig | No accounts. Filming, editing, asset library for all brands. |
+REVISED 2026-07-20, after the Business Suite build proved the phones are not the posting mechanism.
+The original five-phone map was written before we knew that. It was wrong, and the corrected
+version is much smaller.
 
-That is up to 10 or more live surfaces across the brands, all legitimate, all keepable.
+**Only ONE phone is needed right now.** Set up a second only when a second brand goes live.
+
+| Phone | Job | Status |
+|---|---|---|
+| 1 | **The working phone.** Instagram app logged into @bbservicescanberra for Stories, DM replies, and trending-audio browsing. Plus filming, with OneDrive camera upload ON so footage lands on the desktop by itself. | SET UP NOW |
+| 2 | APLakeside phone, same pattern. | When APLakeside accounts are created. |
+| 3 | Evidence / NDIS desk. | Gated on Will's branding call. |
+| 4, 5 | Not needed. Do not set up. | Retired from the plan. |
+
+**Why the shrink.** Facebook Pages have no login, so no phone is needed to hold one. Every
+scheduled post is loaded from the signed-in Chrome on the desktop. LinkedIn and Google Business
+Profile are desktop jobs. So a phone only earns its place for two things: the native app features
+that genuinely are phone-only (Instagram Stories, DMs, TikTok's audio library), and filming.
+
+One phone covers both for one brand. Five phones covered a problem we do not have.
 
 ## Cadence
 
