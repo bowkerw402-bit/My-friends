@@ -81,6 +81,12 @@ STATUS file.
 Neither agent ever sends, deploys, publishes, signs, or spends. Build to one click of readiness and stop.
 Will fires every outward action.
 
+**Social-media carve-out (set 2026-07-20):** for the Social Engine, Will's one click is a single
+"approved" reply covering a whole batch (typically a week of posts). On that reply, in that same
+thread, the agent may load the approved batch into the official platform schedulers (Meta Business
+Suite, TikTok, Buffer), which then auto-publish. Approval is per batch and never carries forward.
+**Will's words:** "I want this to be, like, an automated thing."
+
 ## One ignition at a time (standing)
 Only one venture is actively being ignited. Tracked in `IGNITIONS.md`.
 

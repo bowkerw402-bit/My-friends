@@ -38,16 +38,25 @@ That is up to 10 or more live surfaces across the brands, all legitimate, all ke
 - Ramp: week 1 is one post per brand per day. Week 2 onward moves to two once approval takes
   Will under five minutes. School has started, so the system must cost Will minutes, not hours.
 
-## The daily loop
+## The loop (updated 2026-07-20: one word fires the week)
 
-1. Morning: Claude drafts the day's posts per brand, one angle per platform, filed to
-   `content/queue/` in this folder.
-2. Will approves from his phone: copy, paste, schedule. One sitting.
-3. Scheduling tools (all free): Meta Business Suite (Facebook + Instagram together, supports
-   scheduling), TikTok's native scheduler, Buffer free tier (3 channels) for LinkedIn,
-   Google Business Profile posts direct.
-4. Weekly: Claude reads what performed (Will screenshots the insights pages, per the
+Will's requirement in his words: "I want this to be, like, an automated thing." The design that
+delivers it: the PLATFORMS are the posting robot. Their schedulers auto-publish queued posts with
+nobody touching anything. Will's only recurring act is one approval word per batch.
+
+1. Monday 7:22am: the social-drafts routine writes the FULL WEEK of posts to
+   `content/queue/TODAY.md` and asks for approval in the thread.
+2. Will reads it and replies "approved" (or "approved, but change X"). One word, once a week.
+3. That same session, Claude drives Will's logged-in Chrome and loads every approved post into
+   Meta Business Suite (Facebook + Instagram), TikTok's scheduler, and Buffer (LinkedIn), each
+   with its scheduled time. The platforms then publish automatically, morning and evening, all
+   week. Everything scheduled is logged in STATE.md.
+4. Other mornings the routine only tops up or redrafts on request.
+5. Weekly: Claude reads what performed (Will screenshots the insights pages, per the
    "show, don't describe" standard) and tilts next week's drafts toward what worked.
+
+The floor that cannot be removed: content goes public only on Will's explicit approval, per batch.
+No approval, no scheduling. Approval never carries from one batch to the next.
 
 ## Content pillars
 
