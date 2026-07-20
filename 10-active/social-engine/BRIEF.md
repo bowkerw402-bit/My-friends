@@ -59,6 +59,31 @@ that genuinely are phone-only (Instagram Stories, DMs, TikTok's audio library), 
 
 One phone covers both for one brand. Five phones covered a problem we do not have.
 
+## Where distribution actually comes from (set 2026-07-20)
+
+Will's challenge, and it is a fair one: "that's not multiple different accounts then, it's one.
+which means 1 account not 5."
+
+Correct. The reach does not come from account count. It comes from SURFACE count multiplied by
+post frequency. Reach on these platforms is earned per post through engagement, not granted per
+account, so fifteen zero-follower accounts reach roughly fifteen times nothing.
+
+**The six surfaces, one account each:**
+
+| Surface | Status | Why it matters |
+|---|---|---|
+| Facebook Page | LIVE | Local reach, shares, the Business Suite hub |
+| Instagram | LIVE | Visual, Reels reach beyond followers |
+| Google Business Profile | NOT BUILT | **Highest value for BBS.** Puts the business in Maps and local search for Canberra buyers actively looking |
+| LinkedIn company page | NOT BUILT | The actual B2B buyers: bookkeepers, agencies, property managers |
+| TikTok | NOT BUILT | Pairs with APLakeside video; low priority for BBS |
+| YouTube Shorts | NOT BUILT | Same vertical video, second audience, free |
+
+Six surfaces at two posts a day is over eighty posts a week from one brand, all landing on
+accounts that compound instead of accounts that are invisible. THAT is the widespread version.
+
+Priority order for closing the gap: Google Business Profile, then LinkedIn, then the video pair.
+
 ## Cadence
 
 - Target: morning slot (~7:30am) and evening slot (~6:00pm) per active brand.
