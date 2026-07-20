@@ -1,0 +1,28 @@
+[
+  {
+    "id": "d1-morning",
+    "type": "statement",
+    "text": "The chore stops being a job."
+  },
+  {
+    "id": "d2-morning",
+    "type": "stat",
+    "stat": "11",
+    "text": "hours a week, on tasks nobody would miss."
+  },
+  {
+    "id": "d3-morning",
+    "type": "statement",
+    "text": "You keep the tools. We take the desk."
+  },
+  {
+    "id": "d4-morning",
+    "type": "statement",
+    "text": "If it vanished tonight, would anyone need to be told twice?"
+  },
+  {
+    "id": "d5-morning",
+    "type": "statement",
+    "text": "One page. Three leaks. What each one costs you a year."
+  }
+]
