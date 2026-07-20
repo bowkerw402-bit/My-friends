@@ -37,8 +37,10 @@ const page = await browser.newPage({
   deviceScaleFactor: 1,
 });
 
+// Shoot "/" (Monogram3D), which is the LIVE hero. Do not use /hero-v2: that route is an
+// unfinished treatment experiment whose mark does not render at all.
 for (const pose of poses) {
-  await page.goto(`${baseUrl}/hero-v2?pose=${pose}`, { waitUntil: 'networkidle', timeout: 60000 });
+  await page.goto(`${baseUrl}/?pose=${pose}`, { waitUntil: 'networkidle', timeout: 60000 });
 
   // Wait for the WebGL canvas to hold an actual image. A canvas exists immediately;
   // what matters is whether the GLB has loaded and painted into it.

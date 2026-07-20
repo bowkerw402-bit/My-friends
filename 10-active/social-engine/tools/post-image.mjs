@@ -2,9 +2,16 @@
  * post-image.mjs — render branded post images for the Social Engine.
  *
  * Instagram will not accept a text-only post, so every draft ships with a real PNG.
- * Palette is BBS-locked and measured (see _reference/design-funnel/calibration.md):
- * ground navy #061b3a sits at L=23%, the house ground; champagne #c9ae78 at chroma 0.078
- * is the flagship accent and must not drift upward into "too gold".
+ *
+ * THE ASSET: public/monogram.png from the Bowker Business Events site, which is the
+ * finished hero render Will approved and the exact image he pointed at. It is used as
+ * a file, not re-rendered: the 3D hero needs a GPU that the agent sandbox does not have,
+ * and reproducing the shader treatment by hand would only be an imitation of it.
+ *
+ * THE GROUND is the site's ivory, not navy, so posts read as the same object as the
+ * homepage. Type is navy; champagne carries the kicker and rule.
+ * Palette per _reference/design-funnel/calibration.md: champagne #c9ae78 at chroma 0.078
+ * is the locked BBS accent and must not drift upward into "too gold".
  *
  * Usage:  node post-image.mjs <spec.json> <out-dir>
  */
@@ -13,82 +20,34 @@ import { readFileSync, mkdirSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const HERE = dirname(fileURLToPath(import.meta.url));
-// The LOCKED BBS monogram, navy body with champagne edges, alpha cutout.
-// Do not substitute or redraw this: the letterform is locked.
-const MONOGRAM = 'data:image/png;base64,' +
-  readFileSync(join(HERE, '..', 'assets', 'monogram.png')).toString('base64');
-
 const require = createRequire('C:/Users/bowke/OneDrive/Desktop/CLAUDE/tools/visual-qa/package.json');
 const { chromium } = require('playwright');
 
-const NAVY = '#061b3a';
-const NAVY_2 = '#0a274d';
-const CHAMPAGNE = '#c9ae78';
-const BONE = '#e8e4db';
+const HERE = dirname(fileURLToPath(import.meta.url));
+const HERO = 'data:image/png;base64,' +
+  readFileSync(join(HERE, '..', 'assets', 'monogram-hero.png')).toString('base64');
+
+const IVORY = '#f2efe8';      // the site's hero ground
+const NAVY = '#0d2340';       // headline navy, matches the mark's body
+const NAVY_DEEP = '#061b3a';
+const CHAMPAGNE = '#b2955c';  // kicker/rule: a touch deeper than #c9ae78 so it holds on ivory
 
 const W = 1080;
-const H = 1350; // portrait: more feed real estate than square, better reach
+const H = 1350;
 const COVER_W = 1640;
-const COVER_H = 624; // Facebook Page cover
+const COVER_H = 624;
 
 function esc(s = '') {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-/** Wide Page-cover lockup. Same palette and grid, laid out horizontally. */
-function cover(post) {
-  return `<!doctype html><html><head><meta charset="utf-8"><style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  html,body{width:${COVER_W}px;height:${COVER_H}px}
-  body{
-    background:${NAVY};
-    font-family:"Segoe UI",system-ui,-apple-system,sans-serif;
-    color:${BONE};position:relative;overflow:hidden;
-  }
-  .grid{
-    position:absolute;inset:0;
-    background-image:
-      linear-gradient(${NAVY_2} 1px,transparent 1px),
-      linear-gradient(90deg,${NAVY_2} 1px,transparent 1px);
-    background-size:90px 90px;opacity:.30;
-  }
-  .glow{
-    position:absolute;right:2%;top:-40%;width:55%;height:180%;
-    background:radial-gradient(closest-side, rgba(201,174,120,.16), transparent);
-  }
-  .mark{
-    position:absolute;right:118px;top:50%;transform:translateY(-50%);height:132%;
-    filter:drop-shadow(0 30px 60px rgba(0,0,0,.55));
-  }
-  .plate{
-    position:absolute;inset:0;padding:0 110px;
-    display:flex;flex-direction:column;justify-content:center;
-  }
-  .kicker{
-    font-size:22px;letter-spacing:.22em;text-transform:uppercase;
-    color:${CHAMPAGNE};font-weight:600;
-  }
-  .rule{width:78px;height:2px;background:${CHAMPAGNE};margin:24px 0 30px}
-  .head{font-size:64px;font-weight:600;line-height:1.2;letter-spacing:-.015em;max-width:22ch}
-  </style></head><body>
-    <div class="grid"></div><div class="glow"></div>
-    <img class="mark" src="${MONOGRAM}" alt="">
-    <div class="plate">
-      <div class="kicker">${esc(post.kicker ?? 'BOWKER BUSINESS SERVICES')}</div>
-      <div class="rule"></div>
-      <div class="head">${esc(post.text)}</div>
-    </div>
-  </body></html>`;
-}
+const FONT = 'Georgia,"Times New Roman",serif';   // matches the site's serif headline
 
 function card(post) {
-  const kicker = post.kicker ?? 'BOWKER BUSINESS SERVICES';
+  const kicker = post.kicker ?? "BOWKER'S BUSINESS SERVICES";
   const footer = post.footer ?? 'bowkerbusinessesservices.com';
-
-  // Headline scales down as it gets longer, so long lines never overflow the plate.
-  const len = (post.stat ? post.stat.length : 0) + (post.text?.length ?? 0);
-  const size = len > 150 ? 58 : len > 100 ? 66 : len > 60 ? 76 : 88;
+  const len = (post.stat ? String(post.stat).length : 0) + (post.text?.length ?? 0);
+  const size = len > 130 ? 62 : len > 90 ? 70 : len > 55 ? 80 : 92;
 
   const body = post.stat
     ? `<div class="stat">${esc(post.stat)}</div><div class="sub">${esc(post.text)}</div>`
@@ -97,61 +56,56 @@ function card(post) {
   return `<!doctype html><html><head><meta charset="utf-8"><style>
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{width:${W}px;height:${H}px}
-  body{
-    background:
-      radial-gradient(120% 90% at 72% 68%, ${NAVY_2} 0%, ${NAVY} 62%);
-    font-family:"Segoe UI",system-ui,-apple-system,sans-serif;
-    color:${BONE};
-    position:relative;
-    overflow:hidden;
-  }
-  /* Blueprint construction grid, carried over from the locked BBS hero. Very low
-     opacity: it should read as texture, never as decoration. */
-  .grid{
-    position:absolute;inset:0;
-    background-image:
-      linear-gradient(${NAVY_2} 1px,transparent 1px),
-      linear-gradient(90deg,${NAVY_2} 1px,transparent 1px);
-    background-size:90px 90px;
-    opacity:.26;
-  }
-  /* The locked mark, bled off the lower-right corner so it reads as an object in
-     the frame rather than a logo stuck on top of it. */
-  .mark{
-    position:absolute;right:-130px;bottom:-90px;width:760px;
-    filter:drop-shadow(0 40px 70px rgba(0,0,0,.55));
-    opacity:.97;
-  }
-  .glow{
-    position:absolute;right:-5%;bottom:-10%;width:80%;height:60%;
-    background:radial-gradient(closest-side, rgba(201,174,120,.16), transparent);
-  }
-  .plate{
-    position:absolute;inset:0;
-    padding:104px 96px;
-    display:flex;flex-direction:column;justify-content:space-between;
-  }
-  .kicker{
-    font-size:21px;letter-spacing:.20em;text-transform:uppercase;
-    color:${CHAMPAGNE};font-weight:600;
-  }
-  .rule{width:74px;height:2px;background:${CHAMPAGNE};margin-top:26px}
-  .head{font-weight:600;line-height:1.22;letter-spacing:-.015em;max-width:13ch;
-    text-shadow:0 2px 24px rgba(6,27,58,.9)}
-  .stat{
-    font-size:170px;font-weight:700;line-height:1;color:${CHAMPAGNE};
-    letter-spacing:-.03em;
-  }
-  .sub{font-size:52px;font-weight:400;line-height:1.3;margin-top:28px;max-width:14ch;
-    text-shadow:0 2px 24px rgba(6,27,58,.9)}
-  .foot{font-size:26px;color:${CHAMPAGNE};letter-spacing:.05em}
+  body{background:${IVORY};font-family:${FONT};color:${NAVY};position:relative;overflow:hidden}
+  /* The mark sits lower-right, bled off the edge, so it reads as an object in the frame
+     rather than a logo pasted on. Its own ivory ground melts into the page ground. */
+  /* Mark low and right, clear of the type. The text block sits top-left, so the two
+     never overlap: an overlapping headline was the first thing that read as amateur. */
+  .mark{position:absolute;right:-70px;bottom:-50px;width:660px}
+  .fade{position:absolute;right:0;bottom:0;width:720px;height:820px;
+    background:linear-gradient(to top, ${IVORY} 0%, transparent 20%),
+               linear-gradient(to right, ${IVORY} 0%, transparent 16%)}
+  .plate{position:absolute;inset:0;padding:100px 92px;
+    display:flex;flex-direction:column;justify-content:flex-start}
+  .body{margin-top:74px}
+  .foot{position:absolute;left:92px;bottom:96px}
+  .kicker{font-family:"Segoe UI",system-ui,sans-serif;font-size:20px;letter-spacing:.22em;
+    text-transform:uppercase;color:${CHAMPAGNE};font-weight:600}
+  .rule{width:72px;height:2px;background:${CHAMPAGNE};margin-top:24px}
+  .head{font-weight:700;line-height:1.16;letter-spacing:-.012em;max-width:12ch;color:${NAVY_DEEP}}
+  .stat{font-size:180px;font-weight:700;line-height:1;color:${NAVY_DEEP};letter-spacing:-.035em}
+  .sub{font-size:50px;font-weight:400;line-height:1.28;margin-top:22px;max-width:13ch;color:${NAVY}}
+  .foot{font-family:"Segoe UI",system-ui,sans-serif;font-size:25px;color:${CHAMPAGNE};letter-spacing:.04em}
   </style></head><body>
-    <div class="grid"></div><div class="glow"></div>
-    <img class="mark" src="${MONOGRAM}" alt="">
+    <img class="mark" src="${HERO}" alt=""><div class="fade"></div>
     <div class="plate">
       <div><div class="kicker">${esc(kicker)}</div><div class="rule"></div></div>
-      <div>${body}</div>
+      <div class="body">${body}</div>
       <div class="foot">${esc(footer)}</div>
+    </div>
+  </body></html>`;
+}
+
+function cover(post) {
+  return `<!doctype html><html><head><meta charset="utf-8"><style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:${COVER_W}px;height:${COVER_H}px}
+  body{background:${IVORY};font-family:${FONT};color:${NAVY_DEEP};position:relative;overflow:hidden}
+  .mark{position:absolute;right:150px;bottom:-120px;width:620px}
+  .fade{position:absolute;right:0;bottom:0;width:920px;height:100%;
+    background:linear-gradient(to right, ${IVORY} 0%, transparent 30%)}
+  .plate{position:absolute;inset:0;padding:0 110px;
+    display:flex;flex-direction:column;justify-content:center}
+  .kicker{font-family:"Segoe UI",system-ui,sans-serif;font-size:21px;letter-spacing:.24em;
+    text-transform:uppercase;color:${CHAMPAGNE};font-weight:600}
+  .rule{width:76px;height:2px;background:${CHAMPAGNE};margin:22px 0 28px}
+  .head{font-size:62px;font-weight:700;line-height:1.16;max-width:20ch}
+  </style></head><body>
+    <img class="mark" src="${HERO}" alt=""><div class="fade"></div>
+    <div class="plate">
+      <div class="kicker">${esc(post.kicker ?? "BOWKER'S BUSINESS SERVICES")}</div>
+      <div class="rule"></div>
+      <div class="head">${esc(post.text)}</div>
     </div>
   </body></html>`;
 }
@@ -174,8 +128,7 @@ for (const post of posts) {
     isCover ? { width: COVER_W, height: COVER_H } : { width: W, height: H }
   );
   await page.setContent(isCover ? cover(post) : card(post), { waitUntil: 'load' });
-  const file = join(resolve(outDir), `${post.id}.png`);
-  await page.screenshot({ path: file });
+  await page.screenshot({ path: join(resolve(outDir), `${post.id}.png`) });
   console.log(`rendered ${post.id}.png`);
 }
 

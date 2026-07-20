@@ -1,47 +1,42 @@
 ---
 found: 2026-07-20
-severity: blocks the "render posts from the real hero" path; may also affect the live site
+corrected: 2026-07-20
+severity: LOW. Unused experimental route only. The live hero is fine.
 ---
 
-# hero-v2 renders the blueprint but not the monogram
+# CORRECTED: hero-v2 renders nothing, but hero-v2 is not the live hero
 
-Found while trying to shoot post images from the real hero (Will's chosen path, because the
-flat cards were not good enough and the cutout PNG fringes white at large sizes).
+## The correction first
 
-## What happens
+An earlier version of this file warned that the BBS homepage might be showing a blueprint frame
+with no logo. **That was wrong, and the warning is withdrawn.**
 
-`http://localhost:3001/hero-v2` (and `?pose=1`) renders the blueprint construction frame
-beautifully: guides, circle, ticks, corner brackets, the BOWKER BUSINESS SERVICES footer. The
-**monogram itself never appears.** The canvas stays empty.
+`/` renders the monogram correctly: navy body, champagne edges, blueprint ground, exactly as
+intended. Verified in Will's own Chrome. Will said "confused because it does match", and he was
+right to be.
 
-## What was ruled out
+The mistake: `Bowker Business Events/CLAUDE.md` states plainly that **`app/Monogram3D.tsx` is the
+active one-shot hero animation** on `/`. `app/MonogramV2.tsx` behind `/hero-v2` is a separate
+treatment experiment. I tested the experiment and reported it as though it were the live site.
+The lesson is cheap and worth keeping: read which route is live before declaring a route broken.
 
-| Suspect | Verdict |
-|---|---|
-| GLB failed to load | NO. `GET /models/bbs-monogram-meshy.glb` returns **200**. |
-| JavaScript error | NO. Zero console errors or exceptions on the page. |
-| No GPU / software renderer | NO. Reproduced in Will's **real Chrome with a real GPU**, same result. |
-| Screenshot fired too early | NO. Waited 9 seconds, well past SWEEP 2.6s + IGNITE_DELAY 1.5s + IGNITE 1.6s. |
-| `?pose` value out of range | Unlikely. Reproduced both with `?pose=1` and with no pose at all. |
+## What is actually true
 
-So: the model loads, nothing throws, the GPU is real, and the mark still does not draw.
+`/hero-v2` draws its blueprint frame, circle, ticks and footer, but the monogram never appears.
+Ruled out: GLB load failure (returns 200), JavaScript errors (none), missing GPU (reproduced on a
+real GPU in Chrome), and screenshotting too early (waited 9s, past all animation timings). Both
+`?pose=1` and the natural animation behave the same.
 
-## Where to look next
+Most likely a silent failure in `MonogramV2.tsx`'s `onBeforeCompile` shader injection. It does
+several `.replace()` calls against three.js shader chunk names, and a name that no longer matches
+in three 0.185.1 fails **silently**, leaving uniforms undeclared and geometry unshaded. That fits
+the symptoms exactly: no error, no mark.
 
-`app/MonogramV2.tsx` is heavily customised: `onBeforeCompile` shader injection with object-space
-varyings (`vObjN`, `vObjP`), a two-tone split by depth plane, a Fresnel rim injected after
-`<tonemapping_fragment>`, plus a generated micro-relief normal map. A silent failure in the shader
-injection would produce exactly this: no exception, no console error, geometry present but not
-visibly shaded. Worth checking whether the injected chunks still match three 0.185.1's shader
-source, since a `.replace()` against a chunk name that no longer matches fails **silently** and
-leaves the uniforms undeclared.
-
-Note the DAILY.md backlog already carries an unresolved Codex review of this exact file, including
-a question about whether `vNormal` is correct in the Fresnel injection. That review never reached
-agreement (it ran out of rounds). This may be the same defect, now visible.
+Related: DAILY.md carries an unresolved Codex review of this same file that ran out of rounds
+without agreement, including a question about whether `vNormal` is correct in the Fresnel
+injection. Possibly the same defect.
 
 ## Impact
 
-- Blocks rendering social post images from the real hero.
-- **Check the live site.** If this reproduces in production, the BBS homepage is currently showing
-  a blueprint frame with no logo in it.
+Low. It blocks nothing that matters. The live hero works, and social post images are now shot
+from `/` instead. Worth fixing only if the v2 treatment is still wanted.
