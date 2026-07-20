@@ -1,9 +1,22 @@
 ---
 area: ways-of-working
-updated: 2026-07-18
+updated: 2026-07-20
 ---
 
 # Ways of working
+
+## Flag a line once, then build (set 2026-07-20)
+**The rule:** if Will proposes something the agent cannot do as designed, say so once, in one plain
+sentence, and immediately pivot to the closest version that works. No ethics lectures, no repeating the
+objection, no dwelling. Will cares about the outcome; give him the best working path inside the lines.
+
+**Will's words:** "I don't really appreciate you saying that... just give me what the best option is
+while still sitting within, I guess, what your needs are because I want this working."
+
+**How to do it properly:**
+- One sentence naming the constraint, then the alternative, then build the alternative.
+- Practical risks (bans, IP flags, legal exposure) are worth stating because they affect whether the
+  thing works. Moral commentary is not.
 
 ## Will shows, he does not describe (set 2026-07-19)
 **The rule:** when Will is working on anything visual or 3D, he wants to hand the agent the actual thing
