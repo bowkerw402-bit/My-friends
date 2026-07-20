@@ -20,6 +20,23 @@ one sitting. Volume comes from repurposing (one idea becomes a different post pe
 from duplicate accounts. This is the version that compounds instead of getting banned: platforms
 reward accounts with consistent history, and every follower gained is kept.
 
+## Account architecture (corrected 2026-07-20)
+
+Will's question: "if they are all under different emails and accounts how can they come back to
+one meta suite?" The answer, and it simplifies the build:
+
+- A Facebook Page has NO login. Pages are administered by Will's personal Facebook profile. There
+  is no "BBS Facebook account". One profile administers every brand Page.
+- ONE Business Portfolio at business.facebook.com holds every brand Page and every brand Instagram
+  account. Business Suite then shows a brand switcher.
+- Instagram and TikTok accounts DO have their own logins, one per brand, held on the phones. Each
+  is connected to the portfolio ONCE, after which posting flows through the portfolio.
+- Net effect: many brands, many Instagram logins, one Business Suite, one key (Will's personal
+  Facebook profile). Adding brand number three costs no more than brand number two.
+
+The phones are therefore for FILMING and for holding each brand's Instagram/TikTok login. They are
+not the posting mechanism. All scheduling happens from the signed-in Chrome on the desktop.
+
 ## Phone map
 
 | Phone | Brand | Platforms (in priority order) |
