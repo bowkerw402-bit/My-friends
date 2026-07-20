@@ -36,6 +36,7 @@ const W = 1080;
 const H = 1350;
 const COVER_W = 1640;
 const COVER_H = 624;
+const PROFILE = 1000;   // square avatar; Facebook and Instagram both crop it to a circle
 
 function esc(s = '') {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -136,6 +137,18 @@ function cover(post) {
   </body></html>`;
 }
 
+/* Square avatar. The mark is inset generously because both platforms crop to a circle
+ * and then shrink it to ~40px in a feed: anything tight to the edge gets clipped. */
+function profile(post) {
+  return `<!doctype html><html><head><meta charset="utf-8"><style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{width:${PROFILE}px;height:${PROFILE}px}
+  body{background:${IVORY};position:relative;overflow:hidden;
+    display:flex;align-items:center;justify-content:center}
+  img{width:74%;max-width:none}
+  </style></head><body><img src="${HERO}" alt=""></body></html>`;
+}
+
 const [, , specPath, outDir] = process.argv;
 if (!specPath || !outDir) {
   console.error('usage: node post-image.mjs <spec.json> <out-dir>');
@@ -149,11 +162,16 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1 });
 
 for (const post of posts) {
-  const isCover = post.layout === 'cover';
-  await page.setViewportSize(
-    isCover ? { width: COVER_W, height: COVER_H } : { width: W, height: H }
-  );
-  await page.setContent(isCover ? cover(post) : card(post), { waitUntil: 'load' });
+  const size = post.layout === 'cover'
+    ? { width: COVER_W, height: COVER_H }
+    : post.layout === 'profile'
+      ? { width: PROFILE, height: PROFILE }
+      : { width: W, height: H };
+  await page.setViewportSize(size);
+  const html = post.layout === 'cover' ? cover(post)
+    : post.layout === 'profile' ? profile(post)
+    : card(post);
+  await page.setContent(html, { waitUntil: 'load' });
   await page.screenshot({ path: join(resolve(outDir), `${post.id}.png`) });
   console.log(`rendered ${post.id}.png`);
 }
