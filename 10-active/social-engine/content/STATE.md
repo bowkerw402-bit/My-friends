@@ -8,7 +8,11 @@ _Updated 2026-07-20. The daily social-drafts routine reads this file first._
 - Facebook Page: LIVE. https://www.facebook.com/profile.php?id=61591828153817
   Created 2026-07-20. Verified publicly visible (resolves logged out as
   "Bowker Business Services | Canberra ACT").
-- Instagram: not yet created.
+- Instagram: created 2026-07-20 and linked to the Page (per Will). Not yet verified by the agent,
+  because Chrome has no Facebook session yet.
+- Note to check once signed in: the Page appears under two IDs (profile.php id 61591828153817 and
+  page_id 1188847954317543). Almost certainly the normal dual-ID behaviour of new Pages, but
+  confirm there is only ONE Page before any content is scheduled.
 - LinkedIn company page: not yet created.
 - Google Business Profile: not yet created.
 
