@@ -38,3 +38,12 @@ documentation problem. Not started, and not to be started without Will picking a
 
 _Seed this file further as Will states more visual preferences. Colour, typography, motion, and brand
 rules belong here so Codex can read them too._
+
+## 2026-07-21 — animation library
+Will: "use anime.js when relevant."
+Applies to DOM/SVG animation on web builds (entrances, staggers, settles, draw-ons). anime.js v4 is
+already installed in the BBS repo and is APLakeside's engine per the web-design-3d arbitration.
+Not a mandate to force it where it does not fit: continuous WebGL loops (e.g. a turntable's
+constant rotation) stay in the render loop (useFrame / rAF); anime.js drives the choreography
+around them. Motion stays inside the calibrated quiet-confidence band: 250–450ms, travel ≤24px,
+stagger ~80ms, no bouncy curves.
