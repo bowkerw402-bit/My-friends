@@ -1,4 +1,4 @@
-# MissionControlLib.psm1 - v1.0.0
+# MissionControlLib.psm1 (v1.1.0)
 # Generates the human-facing "window": BOARD.md (funnel/portfolio state from the
 # ledger) and DAILY.md (morning digest from run manifests + ledger). Source ASCII-only.
 #
@@ -138,8 +138,8 @@ function ConvertTo-BoardMarkdown {
     param([Parameter(Mandatory=$true)]$Items)
     $groupOrder = 'In Flight','Revenue','Stalled','Backlog','Parked','Killed'
     $sb = [System.Text.StringBuilder]::new()
-    [void]$sb.Append("# BOARD - Venture funnel state`n`n")
-    [void]$sb.Append("_Generated ").Append((Get-Date).ToString('yyyy-MM-dd HH:mm')).Append(" from Business/_ideas/LEDGER.md. Read-only view - edit state in the ledger._`n`n")
+    [void]$sb.Append("# BOARD: Venture funnel state`n`n")
+    [void]$sb.Append("_Generated ").Append((Get-Date).ToString('yyyy-MM-dd HH:mm')).Append(" from Business/_ideas/LEDGER.md. Read-only view. Edit state in the ledger._`n`n")
     $total = @($Items).Count
     $inflight = @($Items | Where-Object group -eq 'In Flight').Count
     [void]$sb.Append("**").Append($total).Append(" ventures** | In Flight: ").Append($inflight)
@@ -151,9 +151,9 @@ function ConvertTo-BoardMarkdown {
         if ($rows.Count -eq 0) { continue }
         [void]$sb.Append("`n## ").Append($g).Append("  (").Append($rows.Count).Append(")`n`n")
         foreach ($r in $rows) {
-            [void]$sb.Append("- **").Append($r.name).Append("** - ").Append($r.status)
+            [void]$sb.Append("- **").Append($r.name).Append("**: ").Append($r.status)
             [void]$sb.Append("  (").Append($r.id).Append(")")
-            if ($r.lesson) { [void]$sb.Append(" - ").Append($r.lesson) }
+            if ($r.lesson) { [void]$sb.Append(": ").Append($r.lesson) }
             [void]$sb.Append("`n")
         }
     }
@@ -163,16 +163,16 @@ function ConvertTo-BoardMarkdown {
 function ConvertTo-DailyMarkdown {
     param([Parameter(Mandatory=$true)]$Items, $Manifests = @(), $Gates = @(), [int]$SinceHours = 24, [double]$HoursSinceLast = 0, $Recent = @(), $Handoffs = @())
     $sb = [System.Text.StringBuilder]::new()
-    [void]$sb.Append("# DAILY - ").Append((Get-Date).ToString('dddd, yyyy-MM-dd')).Append("`n`n")
+    [void]$sb.Append("# DAILY: ").Append((Get-Date).ToString('dddd, yyyy-MM-dd')).Append("`n`n")
     [void]$sb.Append("_Mission Control morning digest. Generated ").Append((Get-Date).ToString('HH:mm')).Append("._`n")
     if ($HoursSinceLast -gt 26) {
         $days = [math]::Floor($HoursSinceLast / 24)
-        [void]$sb.Append("`n> **STALE ALARM** - previous report was ").Append($HoursSinceLast).Append("h ago (~").Append($days).Append("d). The morning routine missed a run (app closed, git push blocked, or a script error). Check the **morning-report** routine in the Scheduled section of the sidebar.`n")
+        [void]$sb.Append("`n> **STALE ALARM**: previous report was ").Append($HoursSinceLast).Append("h ago (~").Append($days).Append("d). The morning routine missed a run (app closed, git push blocked, or a script error). Check the **morning-report** routine in the Scheduled section of the sidebar.`n")
     }
 
     # --- Runs ---
-    $mans = @($Manifests)
-    [void]$sb.Append("`n## Runs (last ").Append($SinceHours).Append("h)  -  ").Append($mans.Count).Append("`n`n")
+    $mans = @($Manifests | Where-Object { $null -ne $_ })   # drop AutomationNull/null so an empty window renders 0 rows, not a phantom
+    [void]$sb.Append("`n## Runs (last ").Append($SinceHours).Append("h): ").Append($mans.Count).Append("`n`n")
     if ($mans.Count -eq 0) {
         [void]$sb.Append("_No orchestrated runs in the window._`n")
     } else {
@@ -182,15 +182,15 @@ function ConvertTo-DailyMarkdown {
             $hm = if ($m.endedAt) { $m.endedAt.ToString('HH:mm') } else { '--:--' }
             $tShort = ($o.task -replace '\s+', ' ')
             if ($tShort.Length -gt 100) { $tShort = $tShort.Substring(0, 100).Trim() + '...' }
-            [void]$sb.Append("- ").Append($hm).Append(" - ")
+            [void]$sb.Append("- [").Append($hm).Append("] ")
             [void]$sb.Append($tShort).Append($flag)
-            [void]$sb.Append("  -> runs/").Append($o.run_id).Append("/`n")
+            [void]$sb.Append("  (runs/").Append($o.run_id).Append("/)`n")
         }
     }
 
     # --- Recently touched (recency is the priority signal) ---
-    $rec = @($Recent)
-    [void]$sb.Append("`n## Recently touched  -  newest first`n`n")
+    $rec = @($Recent | Where-Object { $null -ne $_ })
+    [void]$sb.Append("`n## Recently touched (newest first)`n`n")
     if ($rec.Count -eq 0) {
         [void]$sb.Append("_Nothing updated yet._`n")
     } else {
@@ -201,7 +201,7 @@ function ConvertTo-DailyMarkdown {
 
     # --- Needs attention ---
     $bad = @($mans | Where-Object { $_.manifest.mode -ne 'two-agent' -or $_.manifest.review_verdict -eq 'FAIL' -or $_.manifest.outcome -eq 'incomplete' })
-    [void]$sb.Append("`n## Needs attention  -  ").Append($bad.Count).Append("`n`n")
+    [void]$sb.Append("`n## Needs attention: ").Append($bad.Count).Append("`n`n")
     if ($bad.Count -eq 0) {
         [void]$sb.Append("_Nothing flagged._`n")
     } else {
@@ -210,13 +210,13 @@ function ConvertTo-DailyMarkdown {
             $why = if ($o.mode -ne 'two-agent') { "ran " + $o.mode + " (codex: " + $o.codex_status + "), consider re-running" }
                    elseif ($o.outcome -eq 'incomplete') { "did not finish, it ran out of rounds without the agents agreeing" }
                    else { "review verdict was FAIL" }
-            [void]$sb.Append("- ").Append($o.task).Append(" - ").Append($why).Append("`n")
+            [void]$sb.Append("- ").Append($o.task).Append(": ").Append($why).Append("`n")
         }
     }
 
     # --- Gates awaiting Will ---
-    $g = @($Gates)
-    [void]$sb.Append("`n## Open gates awaiting you  -  ").Append($g.Count).Append("`n`n")
+    $g = @($Gates | Where-Object { $null -ne $_ })
+    [void]$sb.Append("`n## Open gates awaiting you: ").Append($g.Count).Append("`n`n")
     if ($g.Count -eq 0) {
         [void]$sb.Append("_No unchecked approval items found._`n")
     } else {
@@ -226,8 +226,8 @@ function ConvertTo-DailyMarkdown {
     }
 
     # --- Open handoffs between the agents ---
-    $ho = @($Handoffs)
-    [void]$sb.Append("`n## Open handoffs  -  ").Append($ho.Count).Append("`n`n")
+    $ho = @($Handoffs | Where-Object { $null -ne $_ })
+    [void]$sb.Append("`n## Open handoffs: ").Append($ho.Count).Append("`n`n")
     if ($ho.Count -eq 0) {
         [void]$sb.Append("_None waiting._`n")
     } else {
@@ -238,7 +238,7 @@ function ConvertTo-DailyMarkdown {
 
     # --- Portfolio snapshot ---
     $inflight = @($Items | Where-Object group -eq 'In Flight')
-    [void]$sb.Append("`n## Portfolio  -  ").Append(@($Items).Count).Append(" ventures`n`n")
+    [void]$sb.Append("`n## Portfolio: ").Append(@($Items).Count).Append(" ventures`n`n")
     [void]$sb.Append("In Flight (").Append($inflight.Count).Append("): ")
     if ($inflight.Count -gt 0) { [void]$sb.Append(($inflight | ForEach-Object { $_.name }) -join '; ') } else { [void]$sb.Append("none") }
     [void]$sb.Append("`n`n_Full board: mission-control/BOARD.md_`n")
